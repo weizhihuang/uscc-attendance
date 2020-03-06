@@ -5,6 +5,7 @@ import {
   createProtocol
   /* installVueDevtools */
 } from "vue-cli-plugin-electron-builder/lib";
+import { NFC } from "nfc-pcsc";
 const isDevelopment = process.env.NODE_ENV !== "production";
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -38,6 +39,34 @@ function createWindow() {
 
   win.on("closed", () => {
     win = null;
+  });
+}
+
+function initNFC() {
+  const nfc = new NFC();
+
+  nfc.on("reader", reader => {
+    console.log(`${reader.reader.name}  device attached`);
+
+    reader.on("card", card => {
+      console.log(`${reader.reader.name}  card detected`, card);
+    });
+
+    reader.on("card.off", card => {
+      console.log(`${reader.reader.name}  card removed`, card);
+    });
+
+    reader.on("error", err => {
+      console.log(`${reader.reader.name}  an error occurred`, err);
+    });
+
+    reader.on("end", () => {
+      console.log(`${reader.reader.name}  device removed`);
+    });
+  });
+
+  nfc.on("error", err => {
+    console.log("an error occurred", err);
   });
 }
 
@@ -76,6 +105,7 @@ app.on("ready", async () => {
     // }
   }
   createWindow();
+  initNFC();
 });
 
 // Exit cleanly on request from parent process in development mode.
