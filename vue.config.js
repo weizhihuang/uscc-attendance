@@ -3,5 +3,6 @@ module.exports = {
     electronBuilder: {
       externals: ["nfc-pcsc"]
     }
-  }
+  },
+  transpileDependencies: ["vuetify"]
 };
