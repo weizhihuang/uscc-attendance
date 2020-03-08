@@ -5,6 +5,7 @@ import {
   createProtocol
   /* installVueDevtools */
 } from "vue-cli-plugin-electron-builder/lib";
+import sudo from "sudo-prompt";
 import { NFC } from "nfc-pcsc";
 const isDevelopment = process.env.NODE_ENV !== "production";
 
@@ -43,31 +44,42 @@ function createWindow() {
 }
 
 function initNFC() {
-  const nfc = new NFC();
+  sudo.exec(
+    "rmmod pn533_usb pn533 nfc & systemctl restart pcscd",
+    { name: "USCC ATTENDANCE SYSTEM" },
+    error => {
+      if (error) {
+        app.quit();
+      } else {
+        const nfc = new NFC();
 
-  nfc.on("reader", reader => {
-    console.log(`${reader.reader.name}  device attached`);
+        nfc.on("reader", reader => {
+          console.log(`${reader.reader.name}  device attached`);
 
-    reader.on("card", card => {
-      console.log(`${reader.reader.name}  card detected`, card);
-    });
+          reader.on("card", card => {
+            console.log(`${reader.reader.name}  card detected`, card);
+          });
 
-    reader.on("card.off", card => {
-      console.log(`${reader.reader.name}  card removed`, card);
-    });
+          reader.on("card.off", card => {
+            console.log(`${reader.reader.name}  card removed`, card);
+          });
 
-    reader.on("error", err => {
-      console.log(`${reader.reader.name}  an error occurred`, err);
-    });
+          reader.on("error", err => {
+            console.log(`${reader.reader.name}  an error occurred`, err);
+          });
 
-    reader.on("end", () => {
-      console.log(`${reader.reader.name}  device removed`);
-    });
-  });
+          reader.on("end", () => {
+            console.log(`${reader.reader.name}  device removed`);
+            initNFC();
+          });
+        });
 
-  nfc.on("error", err => {
-    console.log("an error occurred", err);
-  });
+        nfc.on("error", err => {
+          console.log("an error occurred", err);
+        });
+      }
+    }
+  );
 }
 
 // Quit when all windows are closed.
