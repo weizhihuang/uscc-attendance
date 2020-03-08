@@ -15,6 +15,7 @@
   "dependencies": {
     "core-js": "^3.6.4",
     "nfc-pcsc": "^0.8.0",
+    "sudo-prompt": "^9.1.1",
     "vue": "^2.6.11",
     "vue-router": "^3.1.5",
     "vuetify": "^2.2.11",
