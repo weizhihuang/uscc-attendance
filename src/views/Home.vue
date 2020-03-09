@@ -1,13 +1,11 @@
 <template lang="pug">
-  div.fill-height
-    v-container(fill-height)
-      v-container
-        v-row.text-center
-          v-col
-            h1.display-2.font-weight-bold ようこそ USCC Lab
-        v-row.text-right
-          v-col
-            p.headline {{ now }}
+  v-container
+    v-row.text-center
+      v-col
+        h1.display-2.font-weight-bold ようこそ USCC Lab
+    v-row.text-right
+      v-col
+        p.headline {{ now }}
 </template>
 
 <script>
