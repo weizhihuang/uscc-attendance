@@ -5,7 +5,7 @@ import {
   createProtocol
   /* installVueDevtools */
 } from "vue-cli-plugin-electron-builder/lib";
-import sudo from "sudo-prompt";
+// import sudo from "sudo-prompt";
 import { NFC } from "nfc-pcsc";
 const isDevelopment = process.env.NODE_ENV !== "production";
 
@@ -53,17 +53,8 @@ function initNFC() {
       console.log(`${reader.reader.name}  card detected`, card);
     });
 
-    reader.on("card.off", card => {
-      console.log(`${reader.reader.name}  card removed`, card);
-    });
-
-    reader.on("error", err => {
-      console.log(`${reader.reader.name}  an error occurred`, err);
-    });
-
     reader.on("end", () => {
       console.log(`${reader.reader.name}  device removed`);
-      if (process.platform === "linux") reinitNFC();
     });
   });
 
@@ -72,19 +63,19 @@ function initNFC() {
   });
 }
 
-function reinitNFC() {
-  sudo.exec(
-    "rmmod pn533_usb pn533 nfc & systemctl restart pcscd",
-    { name: "USCC ATTENDANCE SYSTEM" },
-    error => {
-      if (error) {
-        app.quit();
-      } else {
-        initNFC();
-      }
-    }
-  );
-}
+// function reinitNFC() {
+//   sudo.exec(
+//     "rmmod pn533_usb pn533 nfc & systemctl restart pcscd",
+//     { name: "USCC ATTENDANCE SYSTEM" },
+//     error => {
+//       if (error) {
+//         app.quit();
+//       } else {
+//         initNFC();
+//       }
+//     }
+//   );
+// }
 
 // Quit when all windows are closed.
 app.on("window-all-closed", () => {
