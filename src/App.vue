@@ -9,7 +9,7 @@
             v-list-item-title 首頁
     
     v-app-bar(app color="primary" dark)
-      v-app-bar-nav-icon(@click.stop="drawer = !darwer")
+      v-app-bar-nav-icon(@click.stop="drawer = !drawer")
       v-toolbar-title USCC打卡系統
 
     v-content
