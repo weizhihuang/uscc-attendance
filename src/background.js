@@ -1,12 +1,13 @@
 "use strict";
 
-import { app, protocol, BrowserWindow } from "electron";
+import { app, protocol, BrowserWindow, ipcMain } from "electron";
 import {
   createProtocol
   /* installVueDevtools */
 } from "vue-cli-plugin-electron-builder/lib";
 // import sudo from "sudo-prompt";
 import { NFC } from "nfc-pcsc";
+import Member from "./model/Member";
 const isDevelopment = process.env.NODE_ENV !== "production";
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -129,3 +130,17 @@ if (isDevelopment) {
     });
   }
 }
+
+ipcMain.on("db", async (event, { model, action, data }) => {
+  try {
+    switch (model) {
+      case "member":
+        event.returnValue = await new Member()[action](data);
+        break;
+      default:
+        throw "";
+    }
+  } catch (error) {
+    console.error(error);
+  }
+});
