@@ -5,7 +5,7 @@
         h1.display-2.font-weight-bold ようこそ USCC Lab
     v-row.text-right
       v-col
-        p.headline {{ now }}
+        p.headline {{ time }}
 </template>
 
 <script>
@@ -13,20 +13,23 @@ export default {
   name: "Home",
   data: () => ({
     timer: null,
-    options: {
-      dateStyle: "full",
-      timeStyle: "short",
-      hour12: false
-    },
-    now: ""
+    time: ""
   }),
   created() {
-    this.timer = setInterval(() => {
-      this.now = new Date().toLocaleString(undefined, this.options);
-    }, 500);
+    this.updateTime();
+    this.timer = setInterval(this.updateTime, 500);
   },
   destroyed() {
     clearInterval(this.timer);
+  },
+  methods: {
+    updateTime() {
+      this.time = new Date().toLocaleString(undefined, {
+        dateStyle: "full",
+        timeStyle: "short",
+        hour12: false
+      });
+    }
   }
 };
 </script>
