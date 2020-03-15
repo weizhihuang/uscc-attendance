@@ -1,72 +1,71 @@
-<template>
-  <v-container>
-    <v-data-table
+<template lang="pug">
+  v-container
+    v-data-table.elevation-1(
       :headers="headers"
       hide-default-footer
       :items="members"
       sort-by="name"
       sort-desc
-      class="elevation-1"
-    >
-      <template v-slot:top>
-        <v-toolbar flat color="white">
-          <v-toolbar-title>實驗室成員</v-toolbar-title>
-          <v-divider class="mx-4" inset vertical></v-divider>
-          <v-spacer></v-spacer>
-          <v-dialog v-model="dialog" max-width="500px">
-            <template v-slot:activator="{ on }">
-              <v-btn color="primary" dark class="mb-2" v-on="on"
-                >新增成員</v-btn
-              >
-            </template>
-            <v-card>
-              <v-card-title>
-                <span class="headline">{{ formTitle }}</span>
-              </v-card-title>
+    )
+      template(v-slot:top)
+        v-toolbar(flat)
+          v-toolbar-title 實驗室成員
+          v-divider.mx-4(inset vertical)
+          v-spacer
+          v-dialog(v-model="dialog" max-width="500px")
+            template(v-slot:activator="{ on }")
+              v-btn.mb-2(color="primary" dark v-on="on") 新增成員
+            v-card
+              v-card-title
+                span.headline {{ formTitle }}
 
-              <v-card-text>
-                <v-container>
-                  <v-row>
-                    <v-col cols="6">
-                      <v-text-field
-                        v-model="editedItem.name"
-                        label="年級 - 姓名"
-                      ></v-text-field>
-                    </v-col>
-                    <v-col cols="6">
-                      <v-text-field
-                        v-model="editedItem.uid"
-                        label="UID"
-                      ></v-text-field>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-card-text>
+              v-card-text
+                v-form(v-model="valid" ref="form")
+                  v-container
+                    v-row
+                      v-col(cols="6")
+                        v-text-field(
+                          v-model.trim="editedItem.name"
+                          autofocus
+                          label="年級 - 姓名"
+                          hint="格式：年級-姓名"
+                          :rules="[rules.required, rules.name]"
+                        )
+                      v-col(cols="6")
+                        v-text-field(
+                          v-model="editedItem.uid"
+                          label="UID"
+                          hint="格式：HH HH HH HH"
+                          :rules="[\
+                            rules.required,\
+                            rules.uid,\
+                            !_find(members, ['uid', editedItem.uid]) ||\
+                            { ...members[editedIndex] }.uid ===\
+                            editedItem.uid ||\
+                            '該UID已被登錄'\
+                          ]"
+                        )
 
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="close">取消</v-btn>
-                <v-btn color="blue darken-1" text @click="save">儲存</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-        </v-toolbar>
-      </template>
-      <template v-slot:item.action="{ item }">
-        <v-icon small class="mr-2" @click="editItem(item)">mdi-pencil</v-icon>
-        <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
-      </template>
-    </v-data-table>
-  </v-container>
+              v-card-actions
+                v-spacer
+                v-btn(color='blue darken-1' text @click='close') 取消
+                v-btn(color='blue darken-1' text @click='save') 儲存
+      template(v-slot:item.name='{ item }')
+        | {{ item.name.replace("-", " - ") }}
+      template(v-slot:item.action='{ item }')
+        v-icon.mr-2(small @click='editItem(item)') mdi-pencil
+        v-icon(small @click='deleteItem(item)') mdi-delete
 </template>
 
 <script>
 import { mapState, mapActions } from "vuex";
+import { find } from "lodash";
 
 export default {
   name: "Members",
   data: () => ({
     dialog: false,
+    valid: false,
     headers: [
       { text: "年級 - 姓名", value: "name" },
       { text: "UID", value: "uid" },
@@ -80,17 +79,29 @@ export default {
     defaultItem: {
       name: "",
       uid: ""
+    },
+    rules: {
+      required: value => !!value || "這是必填欄",
+      name: value => /\S-\S/.test(value) || "格式：年級-姓名",
+      uid: value =>
+        /^([0-9A-F]{2} {1}){3}[0-9A-F]{2}$/i.test(value) || "格式：HH HH HH HH"
     }
   }),
   computed: {
+    ...mapState("member", ["members"]),
     formTitle() {
-      return this.editedIndex === -1 ? "  新增成員" : "編輯成員";
+      return this.editedIndex === -1 ? "新增成員" : "編輯成員";
     },
-    ...mapState("member", ["members"])
+    _find() {
+      return find;
+    }
   },
   watch: {
     dialog(val) {
       val || this.close();
+    },
+    "editedItem.uid"(val) {
+      this.editedItem.uid = val.toUpperCase();
     }
   },
   created() {
@@ -105,7 +116,7 @@ export default {
     ]),
     editItem(item) {
       this.editedIndex = this.members.indexOf(item);
-      this.editedItem = Object.assign({}, item);
+      this.editedItem = { ...item };
       this.dialog = true;
     },
     deleteItem(item) {
@@ -114,20 +125,23 @@ export default {
     close() {
       this.dialog = false;
       setTimeout(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
+        this.editedItem = { ...this.defaultItem };
+        this.$refs.form.resetValidation();
         this.editedIndex = -1;
       }, 300);
     },
     save() {
-      if (this.editedIndex > -1) {
-        this.updateMember({
-          uid: this.members[this.editedIndex].uid,
-          data: this.editedItem
-        });
-      } else {
-        this.storeMember(this.editedItem);
+      if (this.valid) {
+        if (this.editedIndex > -1) {
+          this.updateMember({
+            uid: this.members[this.editedIndex].uid,
+            data: this.editedItem
+          });
+        } else {
+          this.storeMember(this.editedItem);
+        }
+        this.close();
       }
-      this.close();
     }
   }
 };
