@@ -48,13 +48,13 @@
 
               v-card-actions
                 v-spacer
-                v-btn(color='blue darken-1' text @click='close') 取消
-                v-btn(color='blue darken-1' text @click='save') 儲存
-      template(v-slot:item.name='{ item }')
+                v-btn(color="blue darken-1" text @click="close") 取消
+                v-btn(color="blue darken-1" text @click="save") 儲存
+      template(v-slot:item.name="{ item }")
         | {{ item.name.replace("-", " - ") }}
-      template(v-slot:item.action='{ item }')
-        v-icon.mr-2(small @click='editItem(item)') mdi-pencil
-        v-icon(small @click='deleteItem(item)') mdi-delete
+      template(v-slot:item.action="{ item }")
+        v-icon.mr-2(small @click="editItem(item)") mdi-pencil
+        v-icon(small @click="deleteItem(item)") mdi-delete
 </template>
 
 <script>
