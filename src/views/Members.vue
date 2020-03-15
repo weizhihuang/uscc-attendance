@@ -58,6 +58,7 @@
 </template>
 
 <script>
+import { ipcRenderer } from "electron";
 import { mapState, mapActions } from "vuex";
 import { find } from "lodash";
 
@@ -106,6 +107,11 @@ export default {
   },
   created() {
     this.getMembers();
+    ipcRenderer.on("uid", (_event, uid) => {
+      if (this.dialog) {
+        this.editedItem.uid = uid;
+      }
+    });
   },
   methods: {
     ...mapActions("member", [
