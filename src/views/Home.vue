@@ -24,7 +24,8 @@ export default {
   },
   methods: {
     updateTime() {
-      this.time = new Date().toLocaleString(undefined, {
+      this.time = new Date().toLocaleString("zh-TW", {
+        timeZone: "Asia/Taipei",
         dateStyle: "full",
         timeStyle: "short",
         hour12: false
