@@ -19,7 +19,7 @@ export const getMember = ({ commit }, uid) => {
 };
 
 export const storeMember = ({ dispatch }, data) => {
-  ipcRenderer.sendSync("db", { model: "member", action: "store", data });
+  ipcRenderer.sendSync("db", { model: "member", action: "create", data });
   dispatch("getMembers");
 };
 

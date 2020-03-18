@@ -31,7 +31,7 @@ export default class {
     return this.db.asyncAll(`SELECT * FROM ${this.table}`);
   }
 
-  store(data) {
+  create(data) {
     return this.db.asyncRun(`
       INSERT INTO ${this.table} (${keys(data).join(", ")}, created_at)
       VALUES (${JSON.stringify(toArray(data)).slice(1, -1)}, ${Date.now()})
