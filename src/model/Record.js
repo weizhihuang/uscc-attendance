@@ -11,4 +11,12 @@ export default class extends Model {
       )`);
     });
   }
+
+  latest(uid) {
+    return this.db.asyncAll(
+      uid
+        ? `SELECT * FROM records WHERE uid = "${uid}" ORDER BY created_at DESC LIMIT 1`
+        : "SELECT * FROM records ORDER BY created_at DESC LIMIT 1"
+    );
+  }
 }

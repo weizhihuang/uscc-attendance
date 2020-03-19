@@ -1,1 +1,2 @@
 export const UPDATE_RECORDS = "UPDATE_RECORDS";
+export const UPDATE_RECORD = "UPDATE_RECORD";
