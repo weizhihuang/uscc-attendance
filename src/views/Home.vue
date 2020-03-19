@@ -8,13 +8,17 @@
         p.headline {{ timeString }}
     v-row(justify="center")
       v-dialog(v-model="dialog")
-        v-card
+        v-card(v-if="member")
           v-card-title.headline {{ {...member}.name }}
           //- v-card-text.text-center.headline
           v-card-actions
             v-btn(color="green darken-1" text @click="checkIn(member.uid); dialog = false") (1) Check in {{ latestInOut ? `(${countdown}s)` : "" }}
             v-spacer
             v-btn(color="green darken-1" text @click="checkOut(member.uid); dialog = false") (9) Check out {{ latestInOut ? "" : `(${countdown}s)` }}
+        v-card(v-else)
+          v-card-title.headline 學生證未註冊
+          v-card-actions
+            v-btn(block color="secondary" dark to="members") 前往註冊
 </template>
 
 <script>
@@ -42,8 +46,11 @@ export default {
     }
   },
   watch: {
-    member() {
+    member(val) {
       this.dialog = true;
+      if (val) {
+        this.getLatestRecord(val.uid);
+      }
     },
     dialog(val) {
       if (val) {
@@ -51,6 +58,7 @@ export default {
         this.countdown = 5;
       } else {
         window.removeEventListener("keyup", this.handleKeyUp);
+        this.countdown = -1;
       }
     },
     countdown(val) {
@@ -75,7 +83,6 @@ export default {
         //
       } else {
         this.getMember(uid);
-        this.getLatestRecord(uid);
       }
     });
   },
@@ -96,7 +103,7 @@ export default {
         default:
           break;
       }
-      this.countdown = -1;
+      this.dialog = false;
     }
   }
 };
