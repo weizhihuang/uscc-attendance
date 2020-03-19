@@ -42,6 +42,13 @@ export default {
   watch: {
     member() {
       this.dialog = true;
+    },
+    dialog(val) {
+      if (val) {
+        window.addEventListener("keyup", this.handleKeyUp);
+      } else {
+        window.removeEventListener("keyup", this.handleKeyUp);
+      }
     }
   },
   created() {
@@ -61,7 +68,20 @@ export default {
   },
   methods: {
     ...mapActions("member", ["getMember"]),
-    ...mapActions("record", ["checkIn", "checkOut"])
+    ...mapActions("record", ["checkIn", "checkOut"]),
+    handleKeyUp() {
+      switch (event.keyCode) {
+        case 49:
+          this.checkIn(this.member.uid);
+          break;
+        case 57:
+          this.checkOut(this.member.uid);
+          break;
+        default:
+          break;
+      }
+      this.dialog = false;
+    }
   }
 };
 </script>
