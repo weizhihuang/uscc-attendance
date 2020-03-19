@@ -13,8 +13,8 @@ export const getMember = ({ commit }, uid) => {
   const member = ipcRenderer.sendSync("db", {
     model: "member",
     action: "find",
-    data: { uid }
-  });
+    data: uid
+  })[0];
   commit(UPDATE_MEMBER, member);
 };
 

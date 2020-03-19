@@ -12,6 +12,12 @@ export default class extends Model {
     });
   }
 
+  find(uid) {
+    return this.db.asyncAll(
+      `SELECT * FROM members WHERE uid = "${uid}" LIMIT 1`
+    );
+  }
+
   update({ uid, data }) {
     return this.db.asyncRun(
       `UPDATE members SET uid = "${data.uid}", name = "${data.name}" WHERE uid = "${uid}"`

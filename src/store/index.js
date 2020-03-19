@@ -1,6 +1,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import { member } from "./modules/member";
+import { record } from "./modules/record";
 
 Vue.use(Vuex);
 
@@ -9,6 +10,7 @@ export default new Vuex.Store({
   mutations: {},
   actions: {},
   modules: {
-    member
+    member,
+    record
   }
 });

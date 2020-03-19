@@ -8,6 +8,7 @@ import {
 // import sudo from "sudo-prompt";
 import { NFC } from "nfc-pcsc";
 import Member from "./model/Member";
+import Record from "./model/Record";
 const isDevelopment = process.env.NODE_ENV !== "production";
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -143,8 +144,11 @@ ipcMain.on("db", async (event, { model, action, data }) => {
       case "member":
         event.returnValue = await new Member()[action](data);
         break;
+      case "record":
+        event.returnValue = await new Record()[action](data);
+        break;
       default:
-        throw "";
+        throw "Call DB Error";
     }
   } catch (error) {
     console.error(error);
