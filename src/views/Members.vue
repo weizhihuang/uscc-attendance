@@ -112,6 +112,15 @@ export default {
         this.editedItem.uid = uid;
       }
     });
+
+    const { uid } = this.$route.query;
+    if (uid) {
+      this.editedItem.uid = uid;
+      this.dialog = true;
+    }
+  },
+  destroyed() {
+    ipcRenderer.removeAllListeners("uid");
   },
   methods: {
     ...mapActions("member", [

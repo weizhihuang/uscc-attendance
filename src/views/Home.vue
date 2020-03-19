@@ -12,13 +12,13 @@
           v-card-title.headline {{ {...member}.name }}
           //- v-card-text.text-center.headline
           v-card-actions
-            v-btn(color="green darken-1" text @click="checkIn(member.uid); dialog = false") (1) Check in {{ latestInOut ? `(${countdown}s)` : "" }}
+            v-btn(color="green darken-1" text @click="checkIn(uid); dialog = false") (1) Check in {{ latestInOut ? `(${countdown}s)` : "" }}
             v-spacer
-            v-btn(color="green darken-1" text @click="checkOut(member.uid); dialog = false") (9) Check out {{ latestInOut ? "" : `(${countdown}s)` }}
+            v-btn(color="green darken-1" text @click="checkOut(uid); dialog = false") (9) Check out {{ latestInOut ? "" : `(${countdown}s)` }}
         v-card(v-else)
           v-card-title.headline 學生證未註冊
           v-card-actions
-            v-btn(block color="secondary" dark to="members") 前往註冊
+            v-btn(block color="secondary" dark :to="{ path: 'members', query: { uid } }") 前往註冊
 </template>
 
 <script>
@@ -28,6 +28,7 @@ import { mapState, mapActions, mapGetters } from "vuex";
 export default {
   name: "Home",
   data: () => ({
+    uid: "",
     timer: null,
     time: new Date(),
     dialog: false,
@@ -47,7 +48,6 @@ export default {
   },
   watch: {
     member(val) {
-      this.dialog = true;
       if (val) {
         this.getLatestRecord(val.uid);
       }
@@ -66,9 +66,7 @@ export default {
         setTimeout(() => this.countdown--, 1e3);
       } else {
         if (!val) {
-          this.latestInOut
-            ? this.checkIn(this.member.uid)
-            : this.checkOut(this.member.uid);
+          this.latestInOut ? this.checkIn(this.uid) : this.checkOut(this.uid);
         }
         this.dialog = false;
       }
@@ -79,15 +77,18 @@ export default {
       this.time = new Date();
     }, 500);
     ipcRenderer.on("uid", (_event, uid) => {
+      this.uid = uid;
       if (this.dialog) {
         //
       } else {
         this.getMember(uid);
+        this.dialog = true;
       }
     });
   },
   destroyed() {
     clearInterval(this.timer);
+    ipcRenderer.removeAllListeners("uid");
   },
   methods: {
     ...mapActions("member", ["getMember"]),
@@ -95,10 +96,10 @@ export default {
     handleKeyUp() {
       switch (event.keyCode) {
         case 49:
-          this.checkIn(this.member.uid);
+          this.checkIn(this.uid);
           break;
         case 57:
-          this.checkOut(this.member.uid);
+          this.checkOut(this.uid);
           break;
         default:
           break;
