@@ -52,6 +52,7 @@ function initNFC() {
     console.log(`${reader.reader.name}  device attached`);
 
     reader.on("card", card => {
+      win.show();
       win.webContents.send(
         "uid",
         card.uid
