@@ -1,5 +1,5 @@
-import * as actions from "./actions";
 import mutations from "./mutations";
+import * as actions from "./actions";
 
 export const record = {
   namespaced: true,
@@ -10,6 +10,6 @@ export const record = {
   getters: {
     latestInOut: ({ record }) => (record ? !!record.in_out : true) // Check in: false
   },
-  actions,
-  mutations
+  mutations,
+  actions
 };
