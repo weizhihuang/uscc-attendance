@@ -119,7 +119,7 @@ export default {
       this.dialog = true;
     }
   },
-  destroyed() {
+  beforeDestroy() {
     ipcRenderer.removeAllListeners("uid");
   },
   methods: {

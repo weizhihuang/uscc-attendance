@@ -49,30 +49,27 @@ export default {
   watch: {
     member(val) {
       if (val) {
+        addEventListener("keyup", this.handleKeyUp);
         this.getLatestRecord(val.uid);
+        this.countdown = 5;
       }
     },
     dialog(val) {
-      if (val) {
-        window.addEventListener("keyup", this.handleKeyUp);
-        this.countdown = 5;
-      } else {
-        window.removeEventListener("keyup", this.handleKeyUp);
+      if (!val) {
+        removeEventListener("keyup", this.handleKeyUp);
         this.countdown = -1;
       }
     },
     countdown(val) {
       if (val > 0) {
         setTimeout(() => this.countdown--, 1e3);
-      } else {
-        if (!val) {
-          this.latestInOut ? this.checkIn(this.uid) : this.checkOut(this.uid);
-        }
+      } else if (!val) {
+        this.latestInOut ? this.checkIn(this.uid) : this.checkOut(this.uid);
         this.dialog = false;
       }
     }
   },
-  created() {
+  mounted() {
     this.timer = setInterval(() => {
       this.time = new Date();
     }, 500);
@@ -86,9 +83,10 @@ export default {
       }
     });
   },
-  destroyed() {
+  beforeDestroy() {
     clearInterval(this.timer);
     ipcRenderer.removeAllListeners("uid");
+    removeEventListener("keyup", this.handleKeyUp);
   },
   methods: {
     ...mapActions("member", ["getMember"]),
@@ -97,14 +95,15 @@ export default {
       switch (event.keyCode) {
         case 49:
           this.checkIn(this.uid);
+          this.dialog = false;
           break;
         case 57:
           this.checkOut(this.uid);
+          this.dialog = false;
           break;
         default:
           break;
       }
-      this.dialog = false;
     }
   }
 };
