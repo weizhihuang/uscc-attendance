@@ -1,11 +1,11 @@
 "use strict";
 
-import { app, protocol, BrowserWindow, ipcMain } from "electron";
+import { app, protocol, BrowserWindow, ipcMain, dialog } from "electron";
 import {
   createProtocol
   /* installVueDevtools */
 } from "vue-cli-plugin-electron-builder/lib";
-// import sudo from "sudo-prompt";
+import sudo from "sudo-prompt";
 import { NFC } from "nfc-pcsc";
 import Member from "./model/Member";
 import Record from "./model/Record";
@@ -14,6 +14,8 @@ const isDevelopment = process.env.NODE_ENV !== "production";
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let win;
+
+const readers = [];
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -49,7 +51,7 @@ function initNFC() {
   const nfc = new NFC();
 
   nfc.on("reader", reader => {
-    console.log(`${reader.reader.name}  device attached`);
+    readers.push(reader.reader.name);
 
     reader.on("card", card => {
       win.show();
@@ -63,28 +65,17 @@ function initNFC() {
     });
 
     reader.on("end", () => {
-      console.log(`${reader.reader.name}  device removed`);
+      readers.splice(readers.indexOf(reader.reader.name), 1);
     });
   });
 
   nfc.on("error", err => {
-    console.log("an error occurred", err);
+    dialog.showMessageBoxSync({
+      type: "error",
+      message: "an error occurred " + err
+    });
   });
 }
-
-// function reinitNFC() {
-//   sudo.exec(
-//     "rmmod pn533_usb pn533 nfc & systemctl restart pcscd",
-//     { name: "USCC ATTENDANCE SYSTEM" },
-//     error => {
-//       if (error) {
-//         app.quit();
-//       } else {
-//         initNFC();
-//       }
-//     }
-//   );
-// }
 
 // Quit when all windows are closed.
 app.on("window-all-closed", () => {
@@ -153,5 +144,27 @@ ipcMain.on("db", async (event, { model, action, data }) => {
     }
   } catch (error) {
     console.error(error);
+  }
+});
+
+ipcMain.on("readers", event => {
+  event.returnValue = readers;
+});
+
+ipcMain.on("reinitNFC", () => {
+  if (process.platform == "linux") {
+    sudo.exec(
+      "rmmod pn533_usb pn533 nfc & systemctl restart pcscd",
+      { name: "USCC ATTENDANCE SYSTEM" },
+      error => {
+        if (error) {
+          // TODO
+        } else {
+          initNFC();
+        }
+      }
+    );
+  } else {
+    // TODO
   }
 });
