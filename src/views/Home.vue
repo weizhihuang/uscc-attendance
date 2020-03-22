@@ -75,9 +75,7 @@ export default {
     }, 500);
     ipcRenderer.on("uid", (_event, uid) => {
       this.uid = uid;
-      if (this.dialog) {
-        //
-      } else {
+      if (!this.dialog) {
         this.getMember(uid);
         this.dialog = true;
       }
