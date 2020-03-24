@@ -1,6 +1,6 @@
 "use strict";
 
-import { app, protocol, BrowserWindow, ipcMain, dialog } from "electron";
+import { app, protocol, BrowserWindow, ipcMain } from "electron";
 import {
   createProtocol
   /* installVueDevtools */
@@ -69,12 +69,7 @@ function initNFC() {
     });
   });
 
-  nfc.on("error", err => {
-    dialog.showMessageBoxSync({
-      type: "error",
-      message: "an error occurred " + err
-    });
-  });
+  nfc.on("error", console.error);
 }
 
 // Quit when all windows are closed.
