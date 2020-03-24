@@ -1,12 +1,20 @@
 import { UPDATE_RECORDS, UPDATE_RECORD } from "./mutation-types";
 import { ipcRenderer } from "electron";
+import { map } from "lodash";
 
 export const getRecords = ({ commit }) => {
   const records = ipcRenderer.sendSync("db", {
     model: "record",
     action: "index"
   });
-  commit(UPDATE_RECORDS, records);
+  commit(
+    UPDATE_RECORDS,
+    map(records, ({ name, in_out: inOut, created_at: createdAt }) => ({
+      name,
+      inOut,
+      createdAt
+    }))
+  );
 };
 
 export const getLatestRecord = ({ commit }, uid) => {

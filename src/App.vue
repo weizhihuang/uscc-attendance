@@ -12,7 +12,7 @@
             v-icon mdi-account
           v-list-item-content
             v-list-item-title 實驗室成員
-        v-list-item(to="record")
+        v-list-item(to="records")
           v-list-item-action
             v-icon mdi-calendar-clock
           v-list-item-content

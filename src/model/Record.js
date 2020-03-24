@@ -12,6 +12,15 @@ export default class extends Model {
     });
   }
 
+  index() {
+    return this.db.asyncAll(`
+      SELECT name, in_out, records.created_at
+      FROM records
+      JOIN members
+      ON records.uid  = members.uid
+    `);
+  }
+
   latest(uid) {
     return this.db.asyncAll(
       uid
