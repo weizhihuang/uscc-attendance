@@ -92,10 +92,12 @@ export default {
     handleKeyUp() {
       switch (event.keyCode) {
         case 49:
+        case 97:
           this.checkIn(this.uid);
           this.dialog = false;
           break;
         case 57:
+        case 105:
           this.checkOut(this.uid);
           this.dialog = false;
           break;
