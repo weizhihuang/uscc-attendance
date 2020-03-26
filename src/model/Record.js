@@ -30,31 +30,27 @@ export default class extends Model {
   }
 
   async checkOut(uid) {
-    try {
-      const latestRecord = (await this.latest(uid))[0];
-      const now = Date.now();
+    const latestRecord = (await this.latest(uid))[0];
+    const now = Date.now();
 
-      if (latestRecord) {
-        const { created_at: createdAt, updated_at: updatedAt } = latestRecord;
-        if (createdAt === updatedAt) {
-          console.log(`
+    if (latestRecord) {
+      const { created_at: createdAt, updated_at: updatedAt } = latestRecord;
+      if (createdAt === updatedAt) {
+        console.log(`
+        UPDATE records
+        SET updated_at = ${now}
+        WHERE uid = "${uid}" AND created_at = ${createdAt}`);
+        return this.db.asyncRun(`
           UPDATE records
           SET updated_at = ${now}
           WHERE uid = "${uid}" AND created_at = ${createdAt}`);
-          return this.db.asyncRun(`
-            UPDATE records
-            SET updated_at = ${now}
-            WHERE uid = "${uid}" AND created_at = ${createdAt}`);
-        }
       }
-
-      return this.db.asyncRun(`
-        INSERT INTO records
-        VALUES ("${uid}", ${now}, ${now + 1})
-      `);
-    } catch (error) {
-      console.error(error);
     }
+
+    return this.db.asyncRun(`
+      INSERT INTO records
+      VALUES ("${uid}", ${now}, ${now + 1})
+    `);
   }
 
   latest(uid) {
