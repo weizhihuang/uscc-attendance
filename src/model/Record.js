@@ -7,7 +7,7 @@ export default class extends Model {
       this.db.run(`CREATE TABLE IF NOT EXISTS records (
         uid         CHAR(11)  NOT NULL,
         created_at  DATETIME  NOT NULL,
-        updated_at DATETIME  NOT NULL
+        updated_at  DATETIME  NOT NULL
       )`);
     });
   }
