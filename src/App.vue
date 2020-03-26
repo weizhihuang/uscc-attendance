@@ -18,7 +18,7 @@
           v-list-item-content
             v-list-item-title 出席記錄
     
-    v-app-bar(app color="primary" dark)
+    v-app-bar.hidden-print-only(app color="primary" dark)
       v-app-bar-nav-icon(@click.stop="drawer = !drawer")
       v-toolbar-title USCC打卡系統
 

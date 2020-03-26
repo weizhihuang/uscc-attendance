@@ -1,13 +1,38 @@
 <template lang="pug">
   v-container
-    v-data-table(
+    v-data-table.hidden-print-only(
       :headers="headers"
       :items="records"
-      hide-default-footer
+      sort-by="name"
+      sort-desc
     )
       template(v-slot:item.name="{ item }") {{ item.name }}
       template(v-slot:item.inOut="{ item }") {{ `${toLocaleString(item.createdAt)} ～ ${toLocaleString(item.updatedAt)}` }}
       template(v-slot:item.time="{ item }") {{ toTimeString(item.updatedAt - item.createdAt) }}
+    v-data-table.hidden-screen-only(
+      dense
+      :headers="headers"
+      :items="records"
+      sort-by="name"
+      sort-desc
+      hide-default-header
+      hide-default-footer
+      group-by="name"
+      show-group
+    )
+      template(v-slot:group="props")
+        p.mt-2.mb-0 {{ props.group }}
+        v-data-table(
+            :headers="props.headers"
+            :items="props.items"
+            hide-default-header
+            hide-default-footer
+        )
+          template(v-slot:body="{ items }")
+            tbody
+              tr(v-for="item in items" :key="item.name + item.createdAt")
+                td {{ `${toLocaleString(item.createdAt)} ～ ${toLocaleString(item.updatedAt)}` }}
+                td {{ toTimeString(item.updatedAt - item.createdAt) }}
 </template>
 
 <script>
