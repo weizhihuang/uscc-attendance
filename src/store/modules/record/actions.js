@@ -9,10 +9,10 @@ export const getRecords = ({ commit }) => {
   });
   commit(
     UPDATE_RECORDS,
-    map(records, ({ name, in_out: inOut, created_at: createdAt }) => ({
+    map(records, ({ name, created_at: createdAt, updated_at: updatedAt }) => ({
       name,
-      inOut,
-      createdAt
+      createdAt,
+      updatedAt
     }))
   );
 };
@@ -23,17 +23,23 @@ export const getLatestRecord = ({ commit }, uid) => {
     action: "latest",
     data: uid
   })[0];
-  commit(UPDATE_RECORD, record);
+  commit(
+    UPDATE_RECORD,
+    record
+      ? {
+          ...record,
+          createdAt: record.created_at,
+          updatedAt: record.updated_at
+        }
+      : null
+  );
 };
 
 export const checkIn = ({ dispatch }, uid) => {
   ipcRenderer.sendSync("db", {
     model: "record",
-    action: "create",
-    data: {
-      uid,
-      in_out: 0
-    }
+    action: "checkIn",
+    data: uid
   });
   dispatch("getRecords");
 };
@@ -41,11 +47,8 @@ export const checkIn = ({ dispatch }, uid) => {
 export const checkOut = ({ dispatch }, uid) => {
   ipcRenderer.sendSync("db", {
     model: "record",
-    action: "create",
-    data: {
-      uid,
-      in_out: 1
-    }
+    action: "checkOut",
+    data: uid
   });
   dispatch("getRecords");
 };

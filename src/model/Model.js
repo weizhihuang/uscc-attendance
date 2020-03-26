@@ -32,9 +32,12 @@ export default class {
   }
 
   create(data) {
+    const now = Date.now();
     return this.db.asyncRun(`
-      INSERT INTO ${this.table} (${keys(data).join(", ")}, created_at)
-      VALUES (${JSON.stringify(toArray(data)).slice(1, -1)}, ${Date.now()})
+      INSERT INTO ${this.table} (${keys(data).join(
+      ", "
+    )}, created_at, updated_at)
+      VALUES (${JSON.stringify(toArray(data)).slice(1, -1)}, ${now}, ${now})
     `);
   }
 }

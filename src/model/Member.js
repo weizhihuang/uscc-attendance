@@ -7,7 +7,8 @@ export default class extends Model {
       this.db.run(`CREATE TABLE IF NOT EXISTS members (
         uid         CHAR(11)  PRIMARY KEY   NOT NULL,
         name        TEXT                    NOT NULL,
-        created_at  DATETIME  NOT NULL
+        created_at  DATETIME                NOT NULL,
+        updated_at  DATETIME                NOT NULL
       )`);
     });
   }
@@ -19,9 +20,12 @@ export default class extends Model {
   }
 
   update({ uid, data }) {
-    return this.db.asyncRun(
-      `UPDATE members SET uid = "${data.uid}", name = "${data.name}" WHERE uid = "${uid}"`
-    );
+    const { name } = data;
+    return this.db.asyncRun(`
+      UPDATE members
+      SET uid = "${data.uid}", name = "${name}", updated_at = ${Date.now()}
+      WHERE uid = "${uid}"
+    `);
   }
 
   destroy(uid) {

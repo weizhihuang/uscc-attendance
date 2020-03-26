@@ -8,7 +8,8 @@ export const record = {
     record: null
   },
   getters: {
-    latestInOut: ({ record }) => (record ? !!record.in_out : true) // Check in: false
+    latestInOut: ({ record }) =>
+      record ? record.createdAt !== record.updatedAt : true // Check in: false
   },
   mutations,
   actions

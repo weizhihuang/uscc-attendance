@@ -6,8 +6,8 @@
       hide-default-footer
     )
       template(v-slot:item.name="{ item }") {{ item.name.replace("-", " - ") }}
-      template(v-slot:item.inOut="{ item }") {{ item.inOut ? "出" : "進" }}
-      template(v-slot:item.createdAt="{ item }") {{ toLocaleString(item.createdAt) }}
+      template(v-slot:item.inOut="{ item }") {{ `${toLocaleString(item.createdAt)} ～ ${toLocaleString(item.updatedAt)}` }}
+      template(v-slot:item.time="{ item }") {{ toTimeString(item.updatedAt - item.createdAt) }}
 </template>
 
 <script>
@@ -18,8 +18,8 @@ export default {
   data: () => ({
     headers: [
       { text: "年級 - 姓名", value: "name" },
-      { text: "進／出", value: "inOut" },
-      { text: "時間", value: "createdAt" }
+      { text: "進 ～ 出", value: "inOut" },
+      { text: "時間", value: "time" }
     ]
   }),
   computed: {
@@ -40,6 +40,14 @@ export default {
         minute: "2-digit",
         hour12: false
       });
+    },
+    toTimeString(t) {
+      t /= 60000;
+      const d = ~~(t / 1440);
+      t %= 1440;
+      const h = ~~(t / 60);
+      const m = ~~(t % 60);
+      return `${d ? d + " 天" : ""} ${h} 時 ${m} 分`;
     }
   }
 };
