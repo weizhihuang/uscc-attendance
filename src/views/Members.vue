@@ -30,6 +30,7 @@
                           label="年級 - 姓名"
                           hint="格式：年級-姓名"
                           :rules="[rules.required, rules.name]"
+                          @keyup.enter="save"
                         )
                       v-col(cols="6")
                         v-text-field(
@@ -44,6 +45,7 @@
                             editedItem.uid ||\
                             '該UID已被登錄'\
                           ]"
+                          @keyup.enter="save"
                         )
 
               v-card-actions
