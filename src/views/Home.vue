@@ -73,6 +73,7 @@ export default {
     this.timer = setInterval(() => {
       this.time = new Date();
     }, 500);
+
     ipcRenderer.on("uid", (_event, uid) => {
       this.uid = uid;
       if (!this.dialog) {

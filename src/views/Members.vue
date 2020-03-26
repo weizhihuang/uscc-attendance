@@ -108,6 +108,8 @@ export default {
   },
   created() {
     this.getMembers();
+  },
+  mounted() {
     ipcRenderer.on("uid", (_event, uid) => {
       if (this.dialog) {
         this.editedItem.uid = uid;
