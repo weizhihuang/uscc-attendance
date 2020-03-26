@@ -12,9 +12,9 @@
           v-card-title.headline {{ {...member}.name }}
           //- v-card-text.text-center.headline
           v-card-actions
-            v-btn(color="green darken-1" text @click="checkIn(uid); dialog = false") (1) Check in {{ latestInOut ? `(${countdown}s)` : "" }}
+            v-btn(color="green darken-1" text @click="handleCheckIn(uid); dialog = false") (1) Check in {{ latestInOut ? `(${countdown}s)` : "" }}
             v-spacer
-            v-btn(color="green darken-1" text @click="checkOut(uid); dialog = false") (9) Check out {{ latestInOut ? "" : `(${countdown}s)` }}
+            v-btn(color="green darken-1" text @click="handleCheckOut(uid); dialog = false") (9) Check out {{ latestInOut ? "" : `(${countdown}s)` }}
         v-card(v-else)
           v-card-title.headline 學生證未註冊
           v-card-actions
@@ -44,6 +44,15 @@ export default {
         timeStyle: "short",
         hour12: false
       });
+    },
+    notificationTimeString() {
+      return new Date(this.time).toLocaleString("zh-TW", {
+        timeZone: "Asia/Taipei",
+        weekday: "short",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false
+      });
     }
   },
   watch: {
@@ -64,7 +73,9 @@ export default {
       if (val > 0) {
         setTimeout(() => this.countdown--, 1e3);
       } else if (!val) {
-        this.latestInOut ? this.checkIn(this.uid) : this.checkOut(this.uid);
+        this.latestInOut
+          ? this.handleCheckIn(this.uid)
+          : this.handleCheckOut(this.uid);
         this.dialog = false;
       }
     }
@@ -90,16 +101,28 @@ export default {
   methods: {
     ...mapActions("member", ["getMember"]),
     ...mapActions("record", ["getLatestRecord", "checkIn", "checkOut"]),
+    handleCheckIn(uid) {
+      this.checkIn(uid);
+      new Notification("打卡成功", {
+        body: `${this.notificationTimeString} ${this.member.name} 進`
+      });
+    },
+    handleCheckOut(uid) {
+      this.checkOut(uid);
+      new Notification("打卡成功", {
+        body: `${this.notificationTimeString} ${this.member.name} 出`
+      });
+    },
     handleKeyUp() {
       switch (event.keyCode) {
         case 49:
         case 97:
-          this.checkIn(this.uid);
+          this.handleCheckIn(this.uid);
           this.dialog = false;
           break;
         case 57:
         case 105:
-          this.checkOut(this.uid);
+          this.handleCheckOut(this.uid);
           this.dialog = false;
           break;
         default:
