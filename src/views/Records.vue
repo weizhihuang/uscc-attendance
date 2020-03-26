@@ -5,7 +5,7 @@
       :items="records"
       hide-default-footer
     )
-      template(v-slot:item.name="{ item }") {{ item.name.replace("-", " - ") }}
+      template(v-slot:item.name="{ item }") {{ item.name }}
       template(v-slot:item.inOut="{ item }") {{ `${toLocaleString(item.createdAt)} ～ ${toLocaleString(item.updatedAt)}` }}
       template(v-slot:item.time="{ item }") {{ toTimeString(item.updatedAt - item.createdAt) }}
 </template>
