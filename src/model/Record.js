@@ -36,10 +36,6 @@ export default class extends Model {
     if (latestRecord) {
       const { created_at: createdAt, updated_at: updatedAt } = latestRecord;
       if (createdAt === updatedAt) {
-        console.log(`
-        UPDATE records
-        SET updated_at = ${now}
-        WHERE uid = "${uid}" AND created_at = ${createdAt}`);
         return this.db.asyncRun(`
           UPDATE records
           SET updated_at = ${now}
