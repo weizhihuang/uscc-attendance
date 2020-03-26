@@ -24,9 +24,11 @@
 <script>
 import { ipcRenderer } from "electron";
 import { mapState, mapActions, mapGetters } from "vuex";
+import { dateMixin } from "../mixins/dateMixin";
 
 export default {
   name: "Home",
+  mixins: [dateMixin],
   data: () => ({
     uid: "",
     timer: null,
@@ -36,6 +38,7 @@ export default {
   }),
   computed: {
     ...mapState("member", ["member"]),
+    ...mapState("record", ["record"]),
     ...mapGetters("record", ["latestInOut"]),
     timeString() {
       return new Date(this.time).toLocaleString("zh-TW", {
@@ -109,8 +112,12 @@ export default {
     },
     handleCheckOut(uid) {
       this.checkOut(uid);
+      this.getLatestRecord(uid);
+      const { createdAt, updatedAt } = this.record;
       new Notification("打卡成功", {
-        body: `${this.notificationTimeString} ${this.member.name} 出`
+        body: `${this.notificationTimeString} ${
+          this.member.name
+        } 出 ${this.toTimeString(updatedAt - createdAt)}`
       });
     },
     handleKeyUp() {
