@@ -23,7 +23,7 @@
 
 <script>
 import { ipcRenderer } from "electron";
-import { mapState, mapActions, mapGetters } from "vuex";
+import { mapActions } from "vuex";
 import { dateMixin } from "../mixins/dateMixin";
 
 export default {
@@ -31,15 +31,14 @@ export default {
   mixins: [dateMixin],
   data: () => ({
     uid: "",
+    member: null,
+    latestInOut: true,
     timer: null,
     time: new Date(),
     dialog: false,
     countdown: -1
   }),
   computed: {
-    ...mapState("member", ["member"]),
-    ...mapState("record", ["record"]),
-    ...mapGetters("record", ["latestInOut"]),
     timeString() {
       return new Date(this.time).toLocaleString("zh-TW", {
         timeZone: "Asia/Taipei",
@@ -59,10 +58,13 @@ export default {
     }
   },
   watch: {
-    member(val) {
+    async member(val) {
       if (val) {
         addEventListener("keyup", this.handleKeyUp);
-        this.getLatestRecord(val.uid);
+        const record = await this.getLatestRecord(val.uid);
+        this.latestInOut = record
+          ? record.createdAt !== record.updatedAt
+          : true; // Check in: false
         this.countdown = 5;
       }
     },
@@ -88,10 +90,10 @@ export default {
       this.time = new Date();
     }, 500);
 
-    ipcRenderer.on("uid", (_event, uid) => {
-      this.uid = uid;
+    ipcRenderer.on("uid", async (_event, uid) => {
       if (!this.dialog) {
-        this.getMember(uid);
+        this.uid = uid;
+        this.member = await this.getMember(uid);
         this.dialog = true;
       }
     });
@@ -104,16 +106,15 @@ export default {
   methods: {
     ...mapActions("member", ["getMember"]),
     ...mapActions("record", ["getLatestRecord", "checkIn", "checkOut"]),
-    handleCheckIn(uid) {
-      this.checkIn(uid);
+    async handleCheckIn(uid) {
+      await this.checkIn(uid);
       new Notification("打卡成功", {
         body: `${this.notificationTimeString} ${this.member.name} 進`
       });
     },
-    handleCheckOut(uid) {
-      this.checkOut(uid);
-      this.getLatestRecord(uid);
-      const { createdAt, updatedAt } = this.record;
+    async handleCheckOut(uid) {
+      await this.checkOut(uid);
+      const { createdAt, updatedAt } = await this.getLatestRecord(uid);
       new Notification("打卡成功", {
         body: `${this.notificationTimeString} ${
           this.member.name

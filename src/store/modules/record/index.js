@@ -4,12 +4,7 @@ import * as actions from "./actions";
 export const record = {
   namespaced: true,
   state: {
-    records: [],
-    record: null
-  },
-  getters: {
-    latestInOut: ({ record }) =>
-      record ? record.createdAt !== record.updatedAt : true // Check in: false
+    records: []
   },
   mutations,
   actions

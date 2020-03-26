@@ -1,4 +1,4 @@
-import { UPDATE_MEMBERS, UPDATE_MEMBER } from "./mutation-types";
+import { UPDATE_MEMBERS } from "./mutation-types";
 import { ipcRenderer } from "electron";
 
 export const getMembers = ({ commit }) => {
@@ -9,13 +9,12 @@ export const getMembers = ({ commit }) => {
   commit(UPDATE_MEMBERS, members);
 };
 
-export const getMember = ({ commit }, uid) => {
-  const member = ipcRenderer.sendSync("db", {
+export const getMember = (_, uid) => {
+  return ipcRenderer.sendSync("db", {
     model: "member",
     action: "find",
     data: uid
   })[0];
-  commit(UPDATE_MEMBER, member);
 };
 
 export const storeMember = ({ dispatch }, data) => {
