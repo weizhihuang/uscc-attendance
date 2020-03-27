@@ -1,6 +1,6 @@
 <template lang="pug">
   v-container
-    v-card
+    v-card.hidden-print-only
       v-card-title 出席記錄
         v-row
           v-spacer
@@ -24,7 +24,7 @@
               hide-details
             )
           v-col
-            v-btn.mt-3(color="primary" dark) 列印
+            v-btn.mt-3(color="primary" dark @click="print") 列印
       v-data-table.hidden-print-only(
         :headers="headers"
         :items="records"
@@ -46,6 +46,7 @@
       hide-default-footer
       group-by="name"
       show-group
+      no-data-text
     )
       template(v-slot:group="props")
         v-row.mt-2.mr-0
@@ -81,7 +82,10 @@ export default {
     ]
   }),
   computed: {
-    ...mapState("record", ["records"])
+    ...mapState("record", ["records"]),
+    print() {
+      return print;
+    }
   },
   created() {
     this.dates = [
