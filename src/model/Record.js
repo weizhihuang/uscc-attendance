@@ -12,12 +12,13 @@ export default class extends Model {
     });
   }
 
-  index() {
+  index(dates) {
     return this.db.asyncAll(`
       SELECT name, records.created_at, records.updated_at
       FROM records
       JOIN members
       ON records.uid  = members.uid
+      WHERE records.created_at BETWEEN ${dates[0]} AND ${dates[1]}
     `);
   }
 

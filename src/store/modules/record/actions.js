@@ -2,10 +2,11 @@ import { UPDATE_RECORDS } from "./mutation-types";
 import { ipcRenderer } from "electron";
 import { map } from "lodash";
 
-export const getRecords = ({ commit }) => {
+export const getRecords = ({ commit }, dates) => {
   const records = ipcRenderer.sendSync("db", {
     model: "record",
-    action: "index"
+    action: "index",
+    data: [new Date(dates[0]).getTime(), new Date(dates[1]).getTime()]
   });
   commit(
     UPDATE_RECORDS,
@@ -32,20 +33,18 @@ export const getLatestRecord = (_, uid) => {
     : null;
 };
 
-export const checkIn = ({ dispatch }, uid) => {
+export const checkIn = (_, uid) => {
   ipcRenderer.sendSync("db", {
     model: "record",
     action: "checkIn",
     data: uid
   });
-  dispatch("getRecords");
 };
 
-export const checkOut = ({ dispatch }, uid) => {
+export const checkOut = (_, uid) => {
   ipcRenderer.sendSync("db", {
     model: "record",
     action: "checkOut",
     data: uid
   });
-  dispatch("getRecords");
 };
