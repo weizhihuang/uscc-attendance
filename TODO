@@ -1,0 +1,14 @@
+開機啟動
+
+//         if (sw1, sw2) == (0x90, 0x00):
+//             print('Status: The operation completed successfully.')
+//         elif (sw1, sw2) == (0x63, 0):
+//             print('Status: The operation failed.')
+
+
+// def mute():
+//     transmit([0xFF, 0x00, 0x52, 0x00, 0x00])
+
+
+// def unmute():
+//     transmit([0xFF, 0x00, 0x52, 0xFF, 0x00])
