@@ -1,6 +1,6 @@
 "use strict";
 
-import { app, protocol, BrowserWindow, ipcMain } from "electron";
+import { app, protocol, BrowserWindow, ipcMain, dialog } from "electron";
 import {
   createProtocol
   /* installVueDevtools */
@@ -139,7 +139,7 @@ ipcMain.on("db", async (event, { model, action, data }) => {
         throw "Call DB Error";
     }
   } catch (error) {
-    console.error(error);
+    dialog.showErrorBox("錯誤", error);
   }
 });
 
@@ -154,13 +154,13 @@ ipcMain.on("reinitNFC", () => {
       { name: "USCC ATTENDANCE SYSTEM" },
       error => {
         if (error) {
-          // TODO
+          dialog.showErrorBox("錯誤", error);
         } else {
           initNFC();
         }
       }
     );
   } else {
-    // TODO
+    dialog.showErrorBox("錯誤", `Not Supported Platform ${process.platform}`);
   }
 });
