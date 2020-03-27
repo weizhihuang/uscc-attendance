@@ -153,16 +153,14 @@ export default {
     },
     save() {
       if (this.valid) {
+        this.editedItem.name = this.editedItem.name.replace("-", " - ");
         if (this.editedIndex > -1) {
           this.updateMember({
             uid: this.members[this.editedIndex].uid,
             data: this.editedItem
           });
         } else {
-          this.storeMember({
-            ...this.editedItem,
-            name: this.editedItem.name.replace("-", " - ")
-          });
+          this.storeMember(this.editedItem);
         }
         this.close();
       }
