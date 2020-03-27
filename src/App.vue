@@ -59,3 +59,8 @@ export default {
   }
 };
 </script>
+
+<style lang="sass">
+::-webkit-scrollbar
+  display: none
+</style>
