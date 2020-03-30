@@ -13,7 +13,7 @@ const isDevelopment = process.env.NODE_ENV !== "production";
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let win;
+let win, member, record;
 
 const readers = [];
 
@@ -21,6 +21,11 @@ const readers = [];
 protocol.registerSchemesAsPrivileged([
   { scheme: "app", privileges: { secure: true, standard: true } }
 ]);
+
+function initDB() {
+  member = new Member();
+  record = new Record();
+}
 
 function createWindow() {
   // Create the browser window.
@@ -107,6 +112,7 @@ app.on("ready", async () => {
     //   console.error('Vue Devtools failed to install:', e.toString())
     // }
   }
+  initDB();
   createWindow();
   initNFC();
 });
@@ -130,10 +136,10 @@ ipcMain.on("db", async (event, { model, action, data }) => {
   try {
     switch (model) {
       case "member":
-        event.returnValue = await new Member()[action](data);
+        event.returnValue = await member[action](data);
         break;
       case "record":
-        event.returnValue = await new Record()[action](data);
+        event.returnValue = await record[action](data);
         break;
       default:
         throw "Call DB Error";
