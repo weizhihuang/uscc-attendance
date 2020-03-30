@@ -31,7 +31,7 @@
         p.headline 讀卡機：
           span.green--text(v-if="readers.length") {{ readers.join(", ") }}
           span(v-else)
-            span.red--text 未偵測
+            span.red--text 未連接
             v-btn.mb-1.ml-2(outlined small color="warning" @click="reinitNFC") 重啟服務
 </template>
 
