@@ -13,6 +13,12 @@ export default class extends Model {
   }
 
   index(dates) {
+    const timezoneOffset = new Date().getTimezoneOffset() * 6e4;
+    dates = [
+      Date.parse(`${dates[0]}`) + timezoneOffset,
+      Date.parse(`${dates[1] || dates[0]}GMT+8`) + timezoneOffset + 86399999
+    ];
+
     return this.db.asyncAll(`
       SELECT name, records.created_at, records.updated_at
       FROM records

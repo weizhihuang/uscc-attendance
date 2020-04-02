@@ -6,7 +6,7 @@ export const getRecords = ({ commit }, dates) => {
   const records = ipcRenderer.sendSync("db", {
     model: "record",
     action: "index",
-    data: [new Date(dates[0]).getTime(), new Date(dates[1]).getTime()]
+    data: dates
   });
   commit(
     UPDATE_RECORDS,
