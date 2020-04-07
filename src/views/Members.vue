@@ -116,6 +116,13 @@ export default {
     ipcRenderer.on("uid", (_event, uid) => {
       if (this.dialog) {
         this.editedItem.uid = uid;
+      } else {
+        if (find(this.members, ["uid", uid]))
+          this.$router.push({ path: "/", query: { uid } });
+        else {
+          this.editedItem.uid = uid;
+          this.dialog = true;
+        }
       }
     });
 

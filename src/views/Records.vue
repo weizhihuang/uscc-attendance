@@ -63,6 +63,7 @@
 </template>
 
 <script>
+import { ipcRenderer } from "electron";
 import { mapState, mapActions } from "vuex";
 import { dateMixin } from "../mixins/dateMixin";
 import { reduce } from "lodash";
@@ -93,6 +94,11 @@ export default {
       new Date(new Date() - 864e5).toISOString().split("T")[0]
     ];
     this.getRecords(this.dates);
+  },
+  mounted() {
+    ipcRenderer.on("uid", (_event, uid) => {
+      this.$router.push({ path: "/", query: { uid } });
+    });
   },
   watch: {
     dates([d1, d2]) {

@@ -58,6 +58,12 @@ export default {
     }
   },
   watch: {
+    async uid(val) {
+      if (val) {
+        this.member = await this.getMember(val);
+        this.dialog = true;
+      }
+    },
     async member(val) {
       if (val) {
         addEventListener("keyup", this.handleKeyUp);
@@ -70,6 +76,7 @@ export default {
     },
     dialog(val) {
       if (!val) {
+        this.uid = "";
         removeEventListener("keyup", this.handleKeyUp);
         this.countdown = -1;
       }
@@ -90,11 +97,11 @@ export default {
       this.time = new Date();
     }, 500);
 
+    this.uid = this.$route.query.uid;
+
     ipcRenderer.on("uid", async (_event, uid) => {
       if (!this.dialog) {
         this.uid = uid;
-        this.member = await this.getMember(uid);
-        this.dialog = true;
       }
     });
   },
