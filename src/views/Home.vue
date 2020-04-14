@@ -40,21 +40,23 @@ export default {
   }),
   computed: {
     timeString() {
-      return new Date(this.time).toLocaleString("zh-TW", {
-        timeZone: "Asia/Taipei",
-        dateStyle: "full",
-        timeStyle: "short",
-        hour12: false
-      });
+      return new Date(this.time)
+        .toLocaleString("zh-TW", {
+          dateStyle: "full",
+          timeStyle: "short",
+          hour12: false
+        })
+        .replace("24:", "00:");
     },
     notificationTimeString() {
-      return new Date(this.time).toLocaleString("zh-TW", {
-        timeZone: "Asia/Taipei",
-        weekday: "short",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false
-      });
+      return new Date(this.time)
+        .toLocaleString("zh-TW", {
+          weekday: "short",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false
+        })
+        .replace("24:", "00:");
     }
   },
   watch: {

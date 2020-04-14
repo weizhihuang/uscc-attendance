@@ -108,20 +108,16 @@ export default {
   methods: {
     ...mapActions("record", ["getRecords"]),
     toLocaleString(time, short) {
-      const date = short
-        ? {}
-        : {
-            weekday: "narrow",
-            month: "2-digit",
-            day: "2-digit"
-          };
-      return new Date(time).toLocaleString("zh-TW", {
-        timeZone: "Asia/Taipei",
-        ...date,
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false
-      });
+      return new Date(time)
+        .toLocaleString("zh-TW", {
+          ...(short
+            ? {}
+            : { weekday: "narrow", month: "2-digit", day: "2-digit" }),
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false
+        })
+        .replace("24:", "00:");
     },
     sameDay(d1, d2) {
       d1 = new Date(d1);
