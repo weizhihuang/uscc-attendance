@@ -71,6 +71,7 @@ import { reduce } from "lodash";
 export default {
   name: "Records",
   mixins: [dateMixin],
+  props: ["closeDrawer"],
   data: () => ({
     search: "",
     modal: false,
@@ -83,10 +84,7 @@ export default {
     ]
   }),
   computed: {
-    ...mapState("record", ["records"]),
-    print() {
-      return print;
-    }
+    ...mapState("record", ["records"])
   },
   created() {
     this.dates = [
@@ -142,6 +140,12 @@ export default {
         },
         0
       );
+    },
+    print() {
+      this.closeDrawer();
+      setTimeout(() => {
+        print();
+      }, 200);
     }
   }
 };

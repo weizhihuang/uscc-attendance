@@ -24,7 +24,7 @@
 
     v-content
       v-container.fill-height(fluid)
-        router-view
+        router-view(:closeDrawer="() => { drawer = false }")
 
     v-footer(absolute padless v-show="['Home', 'Members'].includes($route.name)")
       v-col.text-center
