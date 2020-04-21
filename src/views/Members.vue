@@ -1,12 +1,6 @@
 <template lang="pug">
   v-container
-    v-data-table.elevation-1(
-      :headers="headers"
-      hide-default-footer
-      :items="members"
-      sort-by="name"
-      sort-desc
-    )
+    v-simple-table.elevation-1(fixed-header height="48vh")
       template(v-slot:top)
         v-toolbar(flat)
           v-toolbar-title 實驗室成員
@@ -52,15 +46,24 @@
                 v-spacer
                 v-btn(color="blue darken-1" text @click="close") 取消
                 v-btn(color="blue darken-1" text @click="save") 儲存
-      template(v-slot:item.name="{ item }") {{ item.name }}
-      template(v-slot:item.action="{ item }")
-        v-icon.mr-2(small @click="editItem(item)") mdi-pencil
-        v-icon(small @click="deleteItem(item)") mdi-delete
+      template(v-slot:default)
+        thead
+          tr
+            th 年級 - 姓名
+            th UID
+            th 操作
+        tbody
+          tr(v-for="item in sortedMembers" :key="item.uid")
+            td {{ item.name }}
+            td {{ item.uid }}
+            td
+              v-icon.mr-2(small @click="editItem(item)") mdi-pencil
+              v-icon(small @click="deleteItem(item)") mdi-delete
 </template>
 
 <script>
 import { ipcRenderer } from "electron";
-import { mapState, mapActions } from "vuex";
+import { mapState, mapActions, mapGetters } from "vuex";
 import { find } from "lodash";
 
 export default {
@@ -68,11 +71,6 @@ export default {
   data: () => ({
     dialog: false,
     valid: false,
-    headers: [
-      { text: "年級 - 姓名", value: "name" },
-      { text: "UID", value: "uid" },
-      { text: "操作", value: "action", sortable: false }
-    ],
     editedIndex: -1,
     editedItem: {
       name: "",
@@ -91,11 +89,10 @@ export default {
   }),
   computed: {
     ...mapState("member", ["members"]),
+    ...mapGetters("member", ["sortedMembers"]),
+    _find: () => find,
     formTitle() {
       return this.editedIndex === -1 ? "新增成員" : "編輯成員";
-    },
-    _find() {
-      return find;
     }
   },
   watch: {
@@ -147,8 +144,8 @@ export default {
       this.editedItem = { ...item };
       this.dialog = true;
     },
-    deleteItem(item) {
-      confirm("你確定要刪除這個項目嗎？") && this.destroyMember(item.uid);
+    deleteItem({ uid }) {
+      confirm("你確定要刪除這個項目嗎？") && this.destroyMember(uid);
     },
     close() {
       this.dialog = false;
