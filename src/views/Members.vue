@@ -31,14 +31,7 @@
                           v-model="editedItem.uid"
                           label="UID"
                           hint="格式：HH HH HH HH"
-                          :rules="[\
-                            rules.required,\
-                            rules.uid,\
-                            !_find(members, ['uid', editedItem.uid]) ||\
-                            { ...members[editedIndex] }.uid ===\
-                            editedItem.uid ||\
-                            '該UID已被登錄'\
-                          ]"
+                          :rules="[rules.required, rules.uid.format, rules.uid.unique]"
                           @keyup.enter="save"
                         )
 
@@ -83,14 +76,16 @@ export default {
     rules: {
       required: value => !!value || "這是必填欄",
       name: value => /\S-\S/.test(value) || "格式：年級-姓名",
-      uid: value =>
-        /^([0-9A-F]{2} {1}){3}[0-9A-F]{2}$/i.test(value) || "格式：HH HH HH HH"
+      uid: {
+        format: value =>
+          /^([0-9A-F]{2} {1}){3}[0-9A-F]{2}$/i.test(value) ||
+          "格式：HH HH HH HH"
+      }
     }
   }),
   computed: {
     ...mapState("member", ["members"]),
     ...mapGetters("member", ["sortedMembers"]),
-    _find: () => find,
     formTitle() {
       return this.editedIndex === -1 ? "新增成員" : "編輯成員";
     }
@@ -107,6 +102,11 @@ export default {
     }
   },
   created() {
+    this.rules.uid.unique = uid =>
+      !find(this.members, { uid }) ||
+      { ...this.members[this.editedIndex] }.uid === uid ||
+      "該UID已被登錄";
+
     this.getMembers();
   },
   mounted() {
