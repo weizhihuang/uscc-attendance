@@ -84,9 +84,8 @@ export default {
       }
     },
     countdown(val) {
-      if (val > 0) {
-        setTimeout(() => this.countdown--, 1e3);
-      } else if (!val) {
+      if (val > 0) setTimeout(() => --this.countdown, 1e3);
+      else if (!val) {
         this.latestInOut
           ? this.handleCheckIn(this.uid)
           : this.handleCheckOut(this.uid);
@@ -102,8 +101,10 @@ export default {
     this.uid = this.$route.query.uid;
 
     ipcRenderer.on("uid", async (_event, uid) => {
-      if (!this.dialog) {
-        this.uid = uid;
+      if (!this.dialog) this.uid = uid;
+      else if (uid !== this.uid) {
+        this.countdown = 0;
+        setTimeout(() => (this.uid = uid), 1e3);
       }
     });
   },
