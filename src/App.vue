@@ -20,7 +20,9 @@
     
     v-app-bar.hidden-print-only(app color="primary" dark)
       v-app-bar-nav-icon(@click.stop="drawer = !drawer")
-      v-toolbar-title USCC打卡系統
+      v-toolbar-title
+        | USCC打卡系統
+        span.subtitle-1.blue-grey--text.text--lighten-4  v{{ version }}
 
     v-content
       v-container.fill-height(fluid)
@@ -36,10 +38,11 @@
 </template>
 
 <script>
-import { ipcRenderer } from "electron";
+import { remote, ipcRenderer } from "electron";
 export default {
   name: "App",
   data: () => ({
+    version: remote.app.getVersion(),
     drawer: false,
     readers: ipcRenderer.sendSync("readers"),
     timer: null
