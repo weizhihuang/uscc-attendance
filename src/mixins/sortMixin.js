@@ -24,7 +24,7 @@ export const sortMixin = {
       return orderBy(
         collection,
         iteratees,
-        orders.map(order => (order ? "asc" : "desc"))
+        orders.map(order => (order === false ? "desc" : order))
       );
     }
   }
