@@ -30,6 +30,7 @@
         :items="records"
         :items-per-page="5"
         :search="search"
+        :custom-sort="customOrderBy"
       )
         template(v-slot:item.name="{ item }") {{ item.name }}
         template(v-slot:item.in="{ item }") {{ toLocaleString(item.createdAt) }}
@@ -41,6 +42,7 @@
       :headers="headers"
       :items="records"
       :items-per-page="-1"
+      :custom-sort="customOrderBy"
       sort-by="name"
       hide-default-header
       hide-default-footer
@@ -66,11 +68,12 @@
 import { ipcRenderer } from "electron";
 import { mapState, mapActions } from "vuex";
 import { dateMixin } from "../mixins/dateMixin";
+import { sortMixin } from "../mixins/sortMixin";
 import { reduce } from "lodash";
 
 export default {
   name: "Records",
-  mixins: [dateMixin],
+  mixins: [dateMixin, sortMixin],
   props: ["closeDrawer"],
   data: () => ({
     search: "",

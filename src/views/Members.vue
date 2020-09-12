@@ -56,11 +56,13 @@
 
 <script>
 import { ipcRenderer } from "electron";
-import { mapState, mapActions, mapGetters } from "vuex";
+import { mapState, mapActions } from "vuex";
+import { sortMixin } from "../mixins/sortMixin";
 import { find } from "lodash";
 
 export default {
   name: "Members",
+  mixins: [sortMixin],
   data: () => ({
     dialog: false,
     valid: false,
@@ -85,7 +87,9 @@ export default {
   }),
   computed: {
     ...mapState("member", ["members"]),
-    ...mapGetters("member", ["sortedMembers"]),
+    sortedMembers() {
+      return this.customOrderBy(this.members, "name", "desc");
+    },
     formTitle() {
       return this.editedIndex === -1 ? "新增成員" : "編輯成員";
     }
