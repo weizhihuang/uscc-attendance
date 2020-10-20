@@ -2,7 +2,7 @@
 v-container
   v-row.text-center
     v-col
-      h1.display-2.font-weight-bold ようこそ USCC Lab
+      h1.display-2.font-weight-bold USCC Lab廣播：請支援收銀
   v-row.text-right
     v-col
       p.headline {{ timeString }}
