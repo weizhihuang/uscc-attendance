@@ -52,7 +52,7 @@ export default {
   }),
   computed: {
     timeString() {
-      return new Date(this.time)
+      return new Date()
         .toLocaleString("zh-TW", {
           dateStyle: "full",
           timeStyle: "short",
@@ -61,7 +61,7 @@ export default {
         .replace("24:", "00:");
     },
     notificationTimeString() {
-      return new Date(this.time)
+      return new Date()
         .toLocaleString("zh-TW", {
           weekday: "short",
           hour: "2-digit",

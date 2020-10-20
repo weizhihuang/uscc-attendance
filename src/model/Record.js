@@ -29,7 +29,7 @@ export default class extends Model {
   }
 
   checkIn(uid) {
-    const now = Date.now();
+    const now = +new Date();
     return this.db.asyncRun(`
       INSERT INTO records
       VALUES ("${uid}", ${now}, ${now})
@@ -38,7 +38,7 @@ export default class extends Model {
 
   async checkOut(uid) {
     const latestRecord = (await this.latest(uid))[0];
-    const now = Date.now();
+    const now = +new Date();
 
     if (latestRecord) {
       const { created_at: createdAt, updated_at: updatedAt } = latestRecord;

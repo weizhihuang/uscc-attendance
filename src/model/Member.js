@@ -23,7 +23,7 @@ export default class extends Model {
     const { name } = data;
     return this.db.asyncRun(`
       UPDATE members
-      SET uid = "${data.uid}", name = "${name}", updated_at = ${Date.now()}
+      SET uid = "${data.uid}", name = "${name}", updated_at = ${+new Date()}
       WHERE uid = "${uid}"
     `);
   }

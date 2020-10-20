@@ -32,7 +32,7 @@ export default class {
   }
 
   create(data) {
-    const now = Date.now();
+    const now = +new Date();
     return this.db.asyncRun(`
       INSERT INTO ${this.table} (${keys(data).join(
       ", "
