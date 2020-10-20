@@ -1,24 +1,36 @@
 <template lang="pug">
-  v-container
-    v-row.text-center
-      v-col
-        h1.display-2.font-weight-bold ようこそ USCC Lab
-    v-row.text-right
-      v-col
-        p.headline {{ timeString }}
-    v-row(justify="center")
-      v-dialog(v-model="dialog")
-        v-card(v-if="member")
-          v-card-title.headline {{ {...member}.name }}
-          //- v-card-text.text-center.headline
-          v-card-actions
-            v-btn(color="green darken-1" text @click="handleCheckIn(uid); dialog = false") (1) Check in {{ latestInOut ? `(${countdown}s)` : "" }}
-            v-spacer
-            v-btn(color="green darken-1" text @click="handleCheckOut(uid); dialog = false") (9) Check out {{ latestInOut ? "" : `(${countdown}s)` }}
-        v-card(v-else)
-          v-card-title.headline 學生證未註冊
-          v-card-actions
-            v-btn(block color="secondary" dark :to="{ path: 'members', query: { uid } }") 前往註冊
+v-container
+  v-row.text-center
+    v-col
+      h1.display-2.font-weight-bold ようこそ USCC Lab
+  v-row.text-right
+    v-col
+      p.headline {{ timeString }}
+  v-row(justify="center")
+    v-dialog(v-model="dialog")
+      v-card(v-if="member")
+        v-card-title.headline {{  {...member}.name  }}
+        v-card-actions
+          v-btn(
+            color="green darken-1",
+            text,
+            @click="handleCheckIn(uid); dialog = false"
+          ) (1) Check in {{ latestInOut ? `(${countdown}s)` : '' }}
+          v-spacer
+          v-btn(
+            color="green darken-1",
+            text,
+            @click="handleCheckOut(uid); dialog = false"
+          ) (9) Check out {{ latestInOut ? '' : `(${countdown}s)` }}
+      v-card(v-else)
+        v-card-title.headline 學生證未註冊
+        v-card-actions
+          v-btn(
+            block,
+            color="secondary",
+            dark,
+            :to="{ path: 'members', query: { uid } }"
+          ) 前往註冊
 </template>
 
 <script>
@@ -136,16 +148,15 @@ export default {
         case 49:
         case 97:
           this.handleCheckIn(this.uid);
-          this.dialog = false;
           break;
         case 57:
         case 105:
           this.handleCheckOut(this.uid);
-          this.dialog = false;
           break;
         default:
-          break;
+          return;
       }
+      this.dialog = false;
     }
   }
 };
