@@ -44,7 +44,7 @@ export default {
   data: () => ({
     uid: "",
     member: null,
-    latestInOut: true,
+    latestInOut: true, // Check in: false
     timer: null,
     time: new Date(),
     dialog: false,
@@ -82,9 +82,12 @@ export default {
       if (val) {
         addEventListener("keyup", this.handleKeyUp);
         const record = await this.getLatestRecord(val.uid);
-        this.latestInOut = record
-          ? record.createdAt !== record.updatedAt
-          : true; // Check in: false
+        if (record) {
+          this.latestInOut =
+            record.createdAt !== record.updatedAt ||
+            new Date() >
+              new Date(new Date().toISOString().split("T")[0] + "T06:00:00");
+        } else this.latestInOut = true;
         this.countdown = 5;
       }
     },
