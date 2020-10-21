@@ -82,11 +82,15 @@ export default {
       if (val) {
         addEventListener("keyup", this.handleKeyUp);
         const record = await this.getLatestRecord(val.uid);
+        const { createdAt, updatedAt } = record;
         if (record) {
+          const six = new Date(
+            new Date().toISOString().split("T")[0] + "T06:00"
+          );
           this.latestInOut =
-            record.createdAt !== record.updatedAt ||
-            new Date() >
-              new Date(new Date().toISOString().split("T")[0] + "T06:00:00");
+            updatedAt < six && new Date() > six
+              ? true
+              : createdAt !== updatedAt;
         } else this.latestInOut = true;
         this.countdown = 5;
       }
