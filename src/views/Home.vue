@@ -9,7 +9,7 @@ v-container
   v-row(justify="center")
     v-dialog(v-model="dialog")
       v-card(v-if="member")
-        v-card-title.headline {{  {...member}.name  }}
+        v-card-title.headline {{ member.name }}
         v-card-actions
           v-btn(
             color="green darken-1",
@@ -107,9 +107,10 @@ export default {
     countdown(val) {
       if (val > 0) setTimeout(() => --this.countdown, 1e3);
       else if (!val) {
-        this.latestInOut
-          ? this.handleCheckIn(this.uid)
-          : this.handleCheckOut(this.uid);
+        if (this.member)
+          this.latestInOut
+            ? this.handleCheckIn(this.uid)
+            : this.handleCheckOut(this.uid);
         this.dialog = false;
       }
     }
