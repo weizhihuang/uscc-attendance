@@ -36,11 +36,11 @@ export default class extends Model {
     `);
   }
 
-  async checkOut(uid) {
+  async checkOut({ uid, force = false }) {
     const latestRecord = (await this.latest(uid))[0];
     const now = +new Date();
 
-    if (latestRecord) {
+    if (latestRecord && !force) {
       const { created_at: createdAt, updated_at: updatedAt } = latestRecord;
       if (createdAt === updatedAt) {
         return this.db.asyncRun(`

@@ -44,7 +44,8 @@ export default {
   data: () => ({
     uid: "",
     member: null,
-    latestInOut: true, // Check in: false
+    latestInOut: true,
+    forceShortOut: false,
     timer: null,
     time: new Date(),
     dialog: false,
@@ -82,15 +83,15 @@ export default {
       if (val) {
         addEventListener("keyup", this.handleKeyUp);
         const record = await this.getLatestRecord(val.uid);
-        const { createdAt, updatedAt } = record;
         if (record) {
+          const { createdAt, updatedAt } = record;
           const six = new Date(
             new Date().toISOString().split("T")[0] + "T06:00"
           );
-          this.latestInOut =
-            updatedAt < six && new Date() > six
-              ? true
-              : createdAt !== updatedAt;
+          if (updatedAt < six && new Date() > six) {
+            if (new Date() - createdAt > 864e5) this.forceShortOut = true;
+            this.latestInOut = true;
+          } else this.latestInOut = createdAt !== updatedAt;
         } else this.latestInOut = true;
         this.countdown = 5;
       }
@@ -98,8 +99,9 @@ export default {
     dialog(val) {
       if (!val) {
         this.uid = "";
-        removeEventListener("keyup", this.handleKeyUp);
+        this.forceShortOut = false;
         this.countdown = -1;
+        removeEventListener("keyup", this.handleKeyUp);
       }
     },
     countdown(val) {
@@ -142,7 +144,7 @@ export default {
       });
     },
     async handleCheckOut(uid) {
-      await this.checkOut(uid);
+      await this.checkOut({ uid, force: this.forceShortOut });
       const { createdAt, updatedAt } = await this.getLatestRecord(uid);
       new Notification("打卡成功", {
         body: `${this.notificationTimeString} ${

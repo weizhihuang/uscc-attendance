@@ -33,18 +33,18 @@ export const getLatestRecord = (_, uid) => {
     : null;
 };
 
-export const checkIn = (_, uid) => {
+export const checkIn = (_, data) => {
   ipcRenderer.sendSync("db", {
     model: "record",
     action: "checkIn",
-    data: uid
+    data
   });
 };
 
-export const checkOut = (_, uid) => {
+export const checkOut = (_, data) => {
   ipcRenderer.sendSync("db", {
     model: "record",
     action: "checkOut",
-    data: uid
+    data
   });
 };
