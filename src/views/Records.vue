@@ -162,7 +162,11 @@ export default {
         records,
         (dates, { createdAt, updatedAt }) => {
           each([createdAt, updatedAt], timestamp =>
-            dates.add(new Date(timestamp).toISOString().split("T")[0])
+            dates.add(
+              new Date(timestamp - new Date().getTimezoneOffset() * 6e4)
+                .toISOString()
+                .split("T")[0]
+            )
           );
           return dates;
         },
