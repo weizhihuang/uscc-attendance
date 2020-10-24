@@ -40,7 +40,7 @@ v-container
           )
         v-col
           v-btn.mt-3(color="primary", dark, @click="print") 列印
-    v-data-table.hidden-print-only(
+    v-data-table(
       :headers="headers",
       :items="records",
       :items-per-page="5",
