@@ -74,4 +74,7 @@ export default {
 @media print
   .v-content
     padding: 0 !important
+
+  .container
+    height: auto !important
 </style>
