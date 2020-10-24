@@ -89,7 +89,7 @@ export default {
             new Date().toISOString().split("T")[0] + "T06:00"
           );
           if (updatedAt < six && new Date() > six) {
-            if (new Date() - createdAt > 864e5) this.forceShortOut = true;
+            if (new Date() - createdAt > 72e6) this.forceShortOut = true;
             this.latestInOut = true;
           } else this.latestInOut = createdAt !== updatedAt;
         } else this.latestInOut = true;
