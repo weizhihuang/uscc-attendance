@@ -88,7 +88,7 @@ import { ipcRenderer } from "electron";
 import { mapState, mapActions } from "vuex";
 import { dateMixin } from "../mixins/dateMixin";
 import { sortMixin } from "../mixins/sortMixin";
-import { reduce, each } from "lodash";
+import { reduce } from "lodash";
 
 export default {
   name: "Records",
@@ -160,13 +160,11 @@ export default {
     totalDays(records) {
       return reduce(
         records,
-        (dates, { createdAt, updatedAt }) => {
-          each([createdAt, updatedAt], timestamp =>
-            dates.add(
-              new Date(timestamp - new Date().getTimezoneOffset() * 6e4)
-                .toISOString()
-                .split("T")[0]
-            )
+        (dates, { createdAt }) => {
+          dates.add(
+            new Date(createdAt - new Date().getTimezoneOffset() * 6e4)
+              .toISOString()
+              .split("T")[0]
           );
           return dates;
         },
