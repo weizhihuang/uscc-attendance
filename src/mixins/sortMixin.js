@@ -1,4 +1,4 @@
-import { isArray, orderBy } from "lodash";
+import { isArray, map, orderBy } from "lodash";
 
 const gradeOrders = "一二三四五六七碩博";
 
@@ -24,7 +24,7 @@ export const sortMixin = {
       return orderBy(
         collection,
         iteratees,
-        orders.map(order => (order === false ? "desc" : order))
+        map(orders, order => (order === false ? "desc" : order))
       );
     }
   }

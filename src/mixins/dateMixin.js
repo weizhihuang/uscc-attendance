@@ -27,7 +27,7 @@ export const dateMixin = {
       ),
     totalDays: records =>
       new Set(
-        records.map(({ createdAt }) =>
+        map(records, ({ createdAt }) =>
           new Date(
             createdAt - new Date().getTimezoneOffset() * 6e4
           ).toDateString()
