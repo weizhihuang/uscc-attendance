@@ -139,9 +139,9 @@ export default {
         body: `${this.notificationTimeText} ${this.member.name} 進`
       });
     },
-    handleCheckOut(uid) {
+    async handleCheckOut(uid) {
       this.checkOut(uid, this.forceShortOut);
-      const { createdAt, updatedAt } = this.getLatestRecord(uid);
+      const { createdAt, updatedAt } = await this.getLatestRecord(uid);
       new Notification("打卡成功", {
         body: `${this.notificationTimeText} ${
           this.member.name

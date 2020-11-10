@@ -34,7 +34,7 @@ export default class extends Model {
     const latest = await this.getLatest(uid);
     if (latest && !force) {
       const { id, created_at: createdAt, updated_at: updatedAt } = latest;
-      if (createdAt === updatedAt) return this.update(id);
+      if (createdAt === updatedAt) return this.update({ id });
     }
 
     await this.create({ uid });
