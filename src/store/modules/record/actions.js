@@ -21,30 +21,29 @@ export const getRecords = ({ commit }, dates) => {
 export const getLatestRecord = (_, uid) => {
   const record = ipcRenderer.sendSync("db", {
     model: "record",
-    action: "latest",
+    action: "getLatest",
     data: uid
-  })[0];
-  return record
-    ? {
-        ...record,
-        createdAt: record.created_at,
-        updatedAt: record.updated_at
-      }
-    : null;
+  });
+
+  if (record) {
+    const { created_at: createdAt, updated_at: updatedAt } = record;
+    return { uid, createdAt, updatedAt };
+  }
+  return null;
 };
 
-export const checkIn = (_, data) => {
+export const checkIn = (_, uid) => {
   ipcRenderer.sendSync("db", {
     model: "record",
-    action: "checkIn",
-    data
+    action: "create",
+    data: { uid }
   });
 };
 
-export const checkOut = (_, data) => {
+export const checkOut = (_, uid, force = false) => {
   ipcRenderer.sendSync("db", {
     model: "record",
     action: "checkOut",
-    data
+    data: { uid, force }
   });
 };

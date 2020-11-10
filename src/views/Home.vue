@@ -5,7 +5,7 @@ v-container
       h1.display-2.font-weight-bold USCC Lab廣播：請支援收銀
   v-row.text-right
     v-col
-      p.headline {{ timeString }}
+      p.headline {{ timeText }}
   v-row(justify="center")
     v-dialog(v-model="dialog")
       v-card(v-if="member")
@@ -15,13 +15,13 @@ v-container
             color="green darken-1",
             text,
             @click="handleCheckIn(uid); dialog = false"
-          ) (1) Check in {{ latestInOut ? `(${countdown}s)` : '' }}
+          ) (1) Check in {{ latestInOut ? countdownText : '' }}
           v-spacer
           v-btn(
             color="green darken-1",
             text,
             @click="handleCheckOut(uid); dialog = false"
-          ) (9) Check out {{ latestInOut ? '' : `(${countdown}s)` }}
+          ) (9) Check out {{ latestInOut ? '' : countdownText }}
       v-card(v-else)
         v-card-title.headline 學生證未註冊
         v-card-actions
@@ -47,30 +47,29 @@ export default {
     latestInOut: true,
     forceShortOut: false,
     timer: null,
-    time: new Date(),
+    time: Date(),
     dialog: false,
     countdown: -1
   }),
   computed: {
-    timeString() {
-      return new Date()
+    timeText: ({ time }) =>
+      new Date(time)
         .toLocaleString("zh-TW", {
           dateStyle: "full",
           timeStyle: "short",
           hour12: false
         })
-        .replace("24:", "00:");
-    },
-    notificationTimeString() {
-      return new Date()
+        .replace("24:", "00:"),
+    notificationTimeText: ({ time }) =>
+      new Date(time)
         .toLocaleString("zh-TW", {
           weekday: "short",
           hour: "2-digit",
           minute: "2-digit",
           hour12: false
         })
-        .replace("24:", "00:");
-    }
+        .replace("24:", "00:"),
+    countdownText: ({ countdown }) => (countdown > 0 ? `(${countdown}s)` : "")
   },
   watch: {
     async uid(val) {
@@ -85,11 +84,9 @@ export default {
         const record = await this.getLatestRecord(val.uid);
         if (record) {
           const { createdAt, updatedAt } = record;
-          const six = new Date(
-            new Date().toISOString().split("T")[0] + "T06:00"
-          );
-          if (updatedAt < six && new Date() > six) {
-            if (new Date() - createdAt > 108e6) this.forceShortOut = true;
+          const six = new Date(new Date(new Date().toDateString() + " 6:"));
+          if (updatedAt < six && Date.now() > six) {
+            if (Date.now() - createdAt > 108e6) this.forceShortOut = true;
             this.latestInOut = true;
           } else this.latestInOut = createdAt !== updatedAt;
         } else this.latestInOut = true;
@@ -116,17 +113,15 @@ export default {
     }
   },
   mounted() {
-    this.timer = setInterval(() => {
-      this.time = new Date();
-    }, 500);
+    this.timer = setInterval(() => (this.time = Date()), 500);
 
     this.uid = this.$route.query.uid;
 
-    ipcRenderer.on("uid", async (_event, uid) => {
+    ipcRenderer.on("uid", (_, uid) => {
       if (!this.dialog) this.uid = uid;
       else if (uid !== this.uid) {
         this.countdown = 0;
-        setTimeout(() => (this.uid = uid), 1e3);
+        setTimeout(() => (this.uid = uid), 200);
       }
     });
   },
@@ -138,17 +133,17 @@ export default {
   methods: {
     ...mapActions("member", ["getMember"]),
     ...mapActions("record", ["getLatestRecord", "checkIn", "checkOut"]),
-    async handleCheckIn(uid) {
-      await this.checkIn(uid);
+    handleCheckIn(uid) {
+      this.checkIn(uid);
       new Notification("打卡成功", {
-        body: `${this.notificationTimeString} ${this.member.name} 進`
+        body: `${this.notificationTimeText} ${this.member.name} 進`
       });
     },
-    async handleCheckOut(uid) {
-      await this.checkOut({ uid, force: this.forceShortOut });
-      const { createdAt, updatedAt } = await this.getLatestRecord(uid);
+    handleCheckOut(uid) {
+      this.checkOut(uid, this.forceShortOut);
+      const { createdAt, updatedAt } = this.getLatestRecord(uid);
       new Notification("打卡成功", {
-        body: `${this.notificationTimeString} ${
+        body: `${this.notificationTimeText} ${
           this.member.name
         } 出 ${this.toTimeString(updatedAt - createdAt)}`
       });
@@ -164,6 +159,7 @@ export default {
           this.handleCheckOut(this.uid);
           break;
         default:
+          this.countdown = -1;
           return;
       }
       this.dialog = false;

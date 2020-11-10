@@ -28,7 +28,7 @@ v-container
                   v-btn(
                     text,
                     color="primary",
-                    @click="$refs.dialog.save(dates); getRecords(dates)"
+                    @click="$refs.dialog.save(dates.sort()); getRecords(dates)"
                   ) 確定
         v-col(cols="4")
           v-text-field(
@@ -79,7 +79,7 @@ v-container
         template(v-slot:body="{ items }")
           tbody
             tr(v-for="item in items", :key="item.name + item.createdAt")
-              td {{ `${toLocaleString(item.createdAt)} ~ ${toLocaleString(item.updatedAt, sameDay(item.createdAt, item.updatedAt))}` }}
+              td {{ `${toLocaleString(item.createdAt)} ~ ${toLocaleString(item.updatedAt, isSameDay([item.createdAt, item.updatedAt]))}` }}
               td {{ toTimeString(item.updatedAt - item.createdAt) }}
 </template>
 
@@ -88,7 +88,6 @@ import { ipcRenderer } from "electron";
 import { mapState, mapActions } from "vuex";
 import { dateMixin } from "../mixins/dateMixin";
 import { sortMixin } from "../mixins/sortMixin";
-import { reduce } from "lodash";
 
 export default {
   name: "Records",
@@ -97,7 +96,10 @@ export default {
   data: () => ({
     search: "",
     modal: false,
-    dates: [],
+    dates: [
+      new Date(Date.now() - 6048e5).toISOString().split("T")[0],
+      new Date(Date.now() - 864e5).toISOString().split("T")[0]
+    ],
     headers: [
       { text: "年級 - 姓名", value: "name" },
       { text: "進", value: "in" },
@@ -109,73 +111,18 @@ export default {
     ...mapState("record", ["records"])
   },
   created() {
-    this.dates = [
-      new Date(new Date() - 6048e5).toISOString().split("T")[0],
-      new Date(new Date() - 864e5).toISOString().split("T")[0]
-    ];
     this.getRecords(this.dates);
   },
   mounted() {
-    ipcRenderer.on("uid", (_event, uid) => {
-      this.$router.push({ path: "/", query: { uid } });
-    });
-  },
-  watch: {
-    dates([d1, d2]) {
-      if (d1 > d2) {
-        this.dates = [d2, d1];
-      }
-    }
+    ipcRenderer.on("uid", (_, uid) =>
+      this.$router.push({ path: "/", query: { uid } })
+    );
   },
   methods: {
     ...mapActions("record", ["getRecords"]),
-    toLocaleString(time, short) {
-      return new Date(time)
-        .toLocaleString("zh-TW", {
-          ...(short
-            ? {}
-            : { weekday: "narrow", month: "2-digit", day: "2-digit" }),
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false
-        })
-        .replace("24:", "00:");
-    },
-    sameDay(d1, d2) {
-      d1 = new Date(d1);
-      d2 = new Date(d2);
-      return (
-        d1.getFullYear() === d2.getFullYear() &&
-        d1.getMonth() === d2.getMonth() &&
-        d1.getDate() === d2.getDate()
-      );
-    },
-    totalTime(records) {
-      return reduce(
-        records,
-        (total, { createdAt, updatedAt }) => total + updatedAt - createdAt,
-        0
-      );
-    },
-    totalDays(records) {
-      return reduce(
-        records,
-        (dates, { createdAt }) => {
-          dates.add(
-            new Date(createdAt - new Date().getTimezoneOffset() * 6e4)
-              .toISOString()
-              .split("T")[0]
-          );
-          return dates;
-        },
-        new Set()
-      ).size;
-    },
     print() {
       this.closeDrawer();
-      setTimeout(() => {
-        print();
-      }, 200);
+      setTimeout(print, 200);
     }
   }
 };

@@ -1,30 +1,27 @@
 import sqlite3 from "sqlite3";
-import { keys, toArray } from "lodash";
+import { keys, toArray, map } from "lodash";
 
 export default class {
   constructor(table) {
     this.db = new sqlite3.Database("attendance.db");
-    this.db.asyncAll = (query, params) => {
-      return new Promise((resolve, reject) => {
-        this.db.serialize(() => {
-          this.db.all(query, params, (error, rows) => {
-            if (error) reject(error);
-            else resolve(rows);
-          });
-        });
-      });
-    };
-    this.db.asyncRun = (query, params) => {
-      return new Promise((resolve, reject) => {
-        this.db.serialize(() => {
-          this.db.run(query, params, error => {
-            if (error) reject(error);
-            else resolve();
-          });
-        });
-      });
-    };
+    this.db.asyncAll = (query, params) =>
+      new Promise((resolve, reject) =>
+        this.db.serialize(() =>
+          this.db.all(query, params, (error, rows) =>
+            error ? reject(error) : resolve(rows)
+          )
+        )
+      );
+    this.db.asyncRun = (query, params) =>
+      new Promise((resolve, reject) =>
+        this.db.serialize(() =>
+          this.db.run(query, params, error =>
+            error ? reject(error) : resolve()
+          )
+        )
+      );
     this.table = table;
+    this.primaryKey = "id";
   }
 
   index() {
@@ -32,12 +29,33 @@ export default class {
   }
 
   create(data) {
-    const now = +new Date();
+    data["created_at"] = data["updated_at"] = Date.now();
     return this.db.asyncRun(`
-      INSERT INTO ${this.table} (${keys(data).join(
-      ", "
-    )}, created_at, updated_at)
-      VALUES (${JSON.stringify(toArray(data)).slice(1, -1)}, ${now}, ${now})
+      INSERT INTO ${this.table} (${keys(data).join(",")})
+      VALUES (${JSON.stringify(toArray(data)).slice(1, -1)})
     `);
+  }
+
+  async find(id) {
+    return (
+      await this.db.asyncAll(
+        `SELECT * FROM ${this.table} WHERE ${this.primaryKey} = "${id}" LIMIT 1`
+      )
+    )[0];
+  }
+
+  update({ [this.primaryKey]: id, data = {} }) {
+    data["updated_at"] = Date.now();
+    return this.db.asyncRun(`
+      UPDATE ${this.table}
+      SET ${map(data, (val, i) => `${i} = "${val}"`).join(",")}
+      WHERE ${this.primaryKey} = "${id}"
+    `);
+  }
+
+  destroy(id) {
+    return this.db.asyncRun(
+      `DELETE FROM ${this.table} WHERE ${this.primaryKey} = "${id}"`
+    );
   }
 }

@@ -4,19 +4,21 @@ export default class extends Model {
   constructor() {
     super("records");
     this.db.serialize(() => {
-      this.db.run(`CREATE TABLE IF NOT EXISTS records (
-        uid         CHAR(11)  NOT NULL,
-        created_at  DATETIME  NOT NULL,
-        updated_at  DATETIME  NOT NULL
+      this.db.run(`CREATE TABLE IF NOT EXISTS ${this.table} (
+        id          INTEGER   PRIMARY KEY   AUTOINCREMENT,
+        uid         CHAR(11)                NOT NULL,
+        created_at  DATETIME,
+        updated_at  DATETIME
       )`);
     });
   }
 
   index(dates) {
     const timezoneOffset = new Date().getTimezoneOffset() * 6e4;
+    dates = dates.sort();
     dates = [
-      Date.parse(`${dates[0]}`) + timezoneOffset,
-      Date.parse(`${dates[1] || dates[0]}`) + timezoneOffset + 86399999
+      +new Date(dates[0]) + timezoneOffset,
+      +new Date(dates[1] || dates[0]) + timezoneOffset + 86399999
     ];
 
     return this.db.asyncAll(`
@@ -28,39 +30,23 @@ export default class extends Model {
     `);
   }
 
-  checkIn(uid) {
-    const now = +new Date();
-    return this.db.asyncRun(`
-      INSERT INTO records
-      VALUES ("${uid}", ${now}, ${now})
-    `);
-  }
-
-  async checkOut({ uid, force = false }) {
-    const latestRecord = (await this.latest(uid))[0];
-    const now = +new Date();
-
-    if (latestRecord && !force) {
-      const { created_at: createdAt, updated_at: updatedAt } = latestRecord;
-      if (createdAt === updatedAt) {
-        return this.db.asyncRun(`
-          UPDATE records
-          SET updated_at = ${now}
-          WHERE uid = "${uid}" AND created_at = ${createdAt}`);
-      }
+  async checkOut({ uid, force }) {
+    const latest = await this.getLatest(uid);
+    if (latest && !force) {
+      const { id, created_at: createdAt, updated_at: updatedAt } = latest;
+      if (createdAt === updatedAt) return this.update(id);
     }
 
-    return this.db.asyncRun(`
-      INSERT INTO records
-      VALUES ("${uid}", ${now}, ${now + 1})
-    `);
+    await this.create({ uid });
+    const { id } = await this.getLatest(uid);
+    return this.update({ id });
   }
 
-  latest(uid) {
-    return this.db.asyncAll(
-      uid
-        ? `SELECT * FROM records WHERE uid = "${uid}" ORDER BY updated_at DESC LIMIT 1`
-        : "SELECT * FROM records ORDER BY updated_at DESC LIMIT 1"
-    );
+  async getLatest(uid) {
+    return (
+      await this.db.asyncAll(
+        `SELECT * FROM records WHERE uid = "${uid}" ORDER BY updated_at DESC LIMIT 1`
+      )
+    )[0];
   }
 }

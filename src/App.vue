@@ -26,7 +26,7 @@ v-app
 
   v-content
     v-container.fill-height(fluid)
-      router-view(:closeDrawer="() => { drawer = false; }")
+      router-view(:closeDrawer="() => (drawer = false)")
 
   v-footer(
     absolute,
@@ -56,13 +56,14 @@ export default {
       this.readers = ipcRenderer.sendSync("readers");
     }, 3e3);
   },
+  mounted() {
+    ipcRenderer.on("uid", () => (this.drawer = false));
+  },
   beforeDestroy() {
     clearInterval(this.timer);
   },
   methods: {
-    reinitNFC() {
-      ipcRenderer.send("reinitNFC");
-    }
+    reinitNFC: () => ipcRenderer.send("reinitNFC")
   }
 };
 </script>
