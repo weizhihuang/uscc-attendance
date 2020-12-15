@@ -85,10 +85,9 @@ export default {
         if (record) {
           const { createdAt, updatedAt } = record;
           const six = new Date(new Date(new Date().toDateString() + " 6:"));
-          if (updatedAt < six && Date.now() > six) {
-            if (Date.now() - createdAt > 108e6) this.forceShortOut = true;
-            this.latestInOut = true;
-          } else this.latestInOut = createdAt !== updatedAt;
+          if (createdAt < six && Date.now() > six) this.latestInOut = true;
+          else this.latestInOut = createdAt !== updatedAt;
+          if (Date.now() - createdAt > 108e6) this.forceShortOut = true;
         } else this.latestInOut = true;
         this.countdown = 5;
       }
@@ -121,7 +120,7 @@ export default {
       if (!this.dialog) this.uid = uid;
       else if (uid !== this.uid) {
         this.countdown = 0;
-        setTimeout(() => (this.uid = uid), 200);
+        setTimeout(() => (this.uid = uid), 1e3);
       }
     });
   },
