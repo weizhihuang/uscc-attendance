@@ -28,7 +28,6 @@ v-container
 <script>
 import { mapState, mapActions } from "vuex";
 import { dateMixin } from "../mixins/dateMixin";
-import { newPlot } from "plotly.js-dist";
 import { groupBy, keys, map, mean } from "lodash";
 
 export default {
@@ -59,7 +58,7 @@ export default {
       localStorage.date = date;
     },
     groupedRecords() {
-      newPlot(
+      Plotly.newPlot( // eslint-disable-line
         this.$refs.chart,
         [
           {
