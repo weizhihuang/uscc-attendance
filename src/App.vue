@@ -17,6 +17,11 @@ v-app
           v-icon mdi-calendar-clock
         v-list-item-content
           v-list-item-title 出席記錄
+      v-list-item(to="statistics")
+        v-list-item-action
+          v-icon mdi-chart-bar
+        v-list-item-content
+          v-list-item-title 時數統計
 
   v-app-bar.hidden-print-only(app, color="primary", dark)
     v-app-bar-nav-icon(@click.stop="drawer = !drawer")

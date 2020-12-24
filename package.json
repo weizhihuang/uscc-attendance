@@ -16,6 +16,7 @@
     "core-js": "^3.6.4",
     "lodash": "^4.17.19",
     "nfc-pcsc": "^0.8.0",
+    "plotly.js-dist": "^1.58.4",
     "sqlite3": "^4.1.1",
     "sudo-prompt": "^9.1.1",
     "vue": "^2.6.11",
