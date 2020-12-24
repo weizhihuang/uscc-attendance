@@ -58,12 +58,9 @@ v-container
     :items="records",
     :items-per-page="-1",
     :custom-sort="customOrderBy",
-    sort-by="name",
     hide-default-header,
     hide-default-footer,
-    group-by="name",
-    show-group,
-    no-data-text
+    group-by="name"
   )
     template(v-slot:group="props")
       v-row.mt-2.mr-0
@@ -84,7 +81,6 @@ v-container
 </template>
 
 <script>
-import { ipcRenderer } from "electron";
 import { mapState, mapActions } from "vuex";
 import { dateMixin } from "../mixins/dateMixin";
 import { sortMixin } from "../mixins/sortMixin";
@@ -97,8 +93,8 @@ export default {
     search: "",
     modal: false,
     dates: [
-      new Date(Date.now() - 6048e5).toISOString().split("T")[0],
-      new Date(Date.now() - 864e5).toISOString().split("T")[0]
+      new Date(Date.now() - 6048e5).toISOString().substr(0, 10),
+      new Date(Date.now() - 864e5).toISOString().substr(0, 10)
     ],
     headers: [
       { text: "年級 - 姓名", value: "name" },
@@ -112,11 +108,6 @@ export default {
   },
   created() {
     this.getRecords(this.dates);
-  },
-  mounted() {
-    ipcRenderer.on("uid", (_, uid) =>
-      this.$router.push({ path: "/", query: { uid } })
-    );
   },
   methods: {
     ...mapActions("record", ["getRecords"]),

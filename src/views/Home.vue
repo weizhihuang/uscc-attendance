@@ -116,22 +116,23 @@ export default {
 
     this.uid = this.$route.query.uid;
 
-    ipcRenderer.on("uid", (_, uid) => {
-      if (!this.dialog) this.uid = uid;
-      else if (uid !== this.uid) {
-        this.countdown = 0;
-        setTimeout(() => (this.uid = uid), 1e3);
-      }
-    });
+    ipcRenderer.on("uid", this.listener);
   },
   beforeDestroy() {
     clearInterval(this.timer);
-    ipcRenderer.removeAllListeners("uid");
+    ipcRenderer.removeListener("uid", this.listener);
     removeEventListener("keyup", this.handleKeyUp);
   },
   methods: {
     ...mapActions("member", ["getMember"]),
     ...mapActions("record", ["getLatestRecord", "checkIn", "checkOut"]),
+    listener(_, uid) {
+      if (!this.dialog) this.uid = uid;
+      else if (uid !== this.uid) {
+        this.countdown = 0;
+        setTimeout(() => (this.uid = uid), 1e3);
+      }
+    },
     handleCheckIn(uid) {
       this.checkIn(uid);
       new Notification("打卡成功", {

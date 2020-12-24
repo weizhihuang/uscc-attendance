@@ -113,7 +113,25 @@ export default {
     this.getMembers();
   },
   mounted() {
-    ipcRenderer.on("uid", (_, uid) => {
+    ipcRenderer.on("uid", this.listener);
+
+    const { uid } = this.$route.query;
+    if (uid) {
+      this.editedItem.uid = uid;
+      this.dialog = true;
+    }
+  },
+  beforeDestroy() {
+    ipcRenderer.removeListener("uid", this.listener);
+  },
+  methods: {
+    ...mapActions("member", [
+      "getMembers",
+      "storeMember",
+      "updateMember",
+      "destroyMember"
+    ]),
+    listener(_, uid) {
       if (this.dialog) {
         this.editedItem.uid = uid;
       } else {
@@ -124,24 +142,7 @@ export default {
           this.dialog = true;
         }
       }
-    });
-
-    const { uid } = this.$route.query;
-    if (uid) {
-      this.editedItem.uid = uid;
-      this.dialog = true;
-    }
-  },
-  beforeDestroy() {
-    ipcRenderer.removeAllListeners("uid");
-  },
-  methods: {
-    ...mapActions("member", [
-      "getMembers",
-      "storeMember",
-      "updateMember",
-      "destroyMember"
-    ]),
+    },
     editItem(item) {
       this.editedIndex = this.members.indexOf(item);
       this.editedItem = { ...item };

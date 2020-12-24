@@ -62,12 +62,18 @@ export default {
     }, 3e3);
   },
   mounted() {
-    ipcRenderer.on("uid", () => (this.drawer = false));
+    ipcRenderer.on("uid", this.listener);
   },
   beforeDestroy() {
     clearInterval(this.timer);
+    ipcRenderer.removeListener("uid", this.listener);
   },
   methods: {
+    listener(_, uid) {
+      this.drawer = false;
+      if (!["Home", "Members"].includes(this.$route.name))
+        this.$router.push({ path: "/", query: { uid } });
+    },
     reinitNFC: () => ipcRenderer.send("reinitNFC")
   }
 };
