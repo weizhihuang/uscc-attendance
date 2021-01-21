@@ -12,3 +12,7 @@
 
 // def unmute():
 //     transmit([0xFF, 0x00, 0x52, 0xFF, 0x00])
+
+
+parseInt('45 B4 8B 3C’.split(' ').reverse().join(''), 16).toString().padStart(10, 0)
+[...((3254695862).toString(16))].map((c, i) => i % 2 ? c : ` ${c}`).join('').split(' ').reverse().join('')
