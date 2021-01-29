@@ -2,7 +2,7 @@
 v-container
   v-row.text-center
     v-col
-      h1.display-2.font-weight-bold USCC Lab廣播：請支援收銀
+      h1.display-2.font-weight-bold {{ title }}
   v-row.text-right
     v-col
       p.headline {{ timeText }}
@@ -42,6 +42,7 @@ export default {
   name: "Home",
   mixins: [dateMixin],
   data: () => ({
+    title: localStorage.title || "USCC Lab",
     uid: "",
     member: null,
     latestInOut: true,
