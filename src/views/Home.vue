@@ -1,8 +1,8 @@
 <template lang="pug">
 v-container
   v-row.text-center
-    v-col
-      h1.display-2.font-weight-bold {{ title }}
+    v-col(@click="form.title = title, titleDialog = true")
+      h1.display-2.font-weight-bold {{ title || 'USCC Lab' }}
   v-row.text-right
     v-col
       p.headline {{ timeText }}
@@ -31,6 +31,15 @@ v-container
             dark,
             :to="{ path: 'members', query: { uid } }"
           ) 前往註冊
+    v-dialog(v-model="titleDialog", max-width=580)
+      v-card
+        v-card-title
+          v-text-field(
+            label="Title",
+            v-model="form.title",
+            autofocus
+            @keyup.enter="title = form.title, titleDialog = false"
+          )
 </template>
 
 <script>
@@ -42,7 +51,7 @@ export default {
   name: "Home",
   mixins: [dateMixin],
   data: () => ({
-    title: localStorage.title || "USCC Lab",
+    title: localStorage.title,
     uid: "",
     member: null,
     latestInOut: true,
@@ -50,6 +59,10 @@ export default {
     timer: null,
     time: Date(),
     dialog: false,
+    titleDialog: false,
+    form: {
+      title: ""
+    },
     countdown: -1
   }),
   computed: {
@@ -110,12 +123,26 @@ export default {
             : this.handleCheckOut(this.uid);
         this.dialog = false;
       }
+    },
+    title(title) {
+      localStorage.title = title;
     }
+  },
+  created() {
+    // document.addEventListener("keydown", ({ key }) => {
+    //   switch (key) {
+    //     case "F8":
+    //       break;
+    //     default:
+    //       break;
+    //   }
+    // });
   },
   mounted() {
     this.timer = setInterval(() => (this.time = Date()), 500);
 
     this.uid = this.$route.query.uid;
+    if (this.uid) this.$router.replace({ query: null });
 
     ipcRenderer.on("uid", this.listener);
   },
