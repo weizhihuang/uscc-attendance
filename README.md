@@ -1,4 +1,4 @@
-# USCC Attendance
+# USCC ATTENDANCE
 
 ## Requirements
  - Development
