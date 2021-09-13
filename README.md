@@ -1,4 +1,4 @@
-# uscc-attendance-system
+# USCC Attendance
 
 ## Requirements
  - Development
